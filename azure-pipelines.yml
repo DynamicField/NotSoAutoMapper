@@ -22,12 +22,13 @@ steps:
     projects: 'HandmadeMapper.Tests/HandmadeMapper.Tests.csproj'
     testRunTitle: 'Run tests'
 
-- task: DotNetCoreCLI@2
+- task: CopyFiles@2
   inputs:
-    command: 'pack'
-    packagesToPack: '**/*.csproj;!**/*.Tests.csproj'
-    includesymbols: true
-    versioningScheme: 'off'
+    SourceFolder: '$(agent.builddirectory)'
+    Contents: |
+      **/*.nupkg
+      **/*.snupkg
+    TargetFolder: '$(build.artifactstagingdirectory)'
 
 - task: PublishBuildArtifacts@1
   inputs:
