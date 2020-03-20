@@ -6,7 +6,6 @@
     <Nullable>Enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Authors>jeuxjeux20</Authors>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>A HandmadeMapper extension to support Microsoft.Extensions.DependencyInjection.</Description>
     <PackageProjectUrl>https://github.com/jeuxjeux20/HandmadeMapper</PackageProjectUrl>
@@ -15,6 +14,12 @@
     <PackageTags>handmademapper dependencyinjection ioc microsoft aspnetcore efcore</PackageTags>
     <PackageIcon>logo_512x512.png</PackageIcon>
     <PackageIconUrl />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

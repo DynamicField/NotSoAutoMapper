@@ -15,6 +15,11 @@
     <PackageIconUrl />
     <RepositoryType>git</RepositoryType>
     <PackageTags>handmademapper ioc dependencyinjection di inversionofcontrol</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
