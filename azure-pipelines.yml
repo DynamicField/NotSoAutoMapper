@@ -15,9 +15,22 @@ steps:
     command: 'build'
     projects: '**/*.csproj'
     arguments: '-c Release'
-
+    
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
     projects: 'HandmadeMapper.Tests/HandmadeMapper.Tests.csproj'
     testRunTitle: 'Run tests'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/*.csproj;!**/*.Tests.csproj'
+    includesymbols: true
+    versioningScheme: 'off'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'nuget'
+    publishLocation: 'Container'
