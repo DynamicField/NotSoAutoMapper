@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>Enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>jeuxjeux20</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>A HandmadeMapper extension to support Microsoft.Extensions.DependencyInjection.</Description>
+    <PackageProjectUrl>https://github.com/jeuxjeux20/HandmadeMapper</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jeuxjeux20/HandmadeMapper</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>handmademapper dependencyinjection ioc microsoft aspnetcore efcore</PackageTags>
+    <PackageIcon>logo_512x512.png</PackageIcon>
+    <PackageIconUrl />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Nullable" Version="1.2.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HandmadeMapper.Extensions.Ioc.Base\HandmadeMapper.Extensions.Ioc.Base.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\logo_512x512.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
