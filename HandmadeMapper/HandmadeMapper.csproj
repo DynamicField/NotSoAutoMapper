@@ -16,6 +16,9 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>handmademapper mapper dto expression entityframework ef efcore entityframeworkcore map</PackageTags>
     <PackageReleaseNotes>It's there!</PackageReleaseNotes>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">

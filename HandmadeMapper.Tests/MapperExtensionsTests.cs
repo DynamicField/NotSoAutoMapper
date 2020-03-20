@@ -11,7 +11,7 @@ namespace HandmadeMapper.Tests
     public class MapperExtensionsTests
     {
         [TestMethod]
-        public void Merge_MergesOriginalExpressionWithExtension()
+        public void Merge_MergesExpressionWithExtension()
         {
             Expression<Func<Thing, ThingDto>> expression = x => new ThingDto
             {
@@ -26,7 +26,7 @@ namespace HandmadeMapper.Tests
 
             var result = mapper.Merge(extension);
 
-            _ = mapper.Received(Quantity.None()).Expression; // Only the OriginalExpression should get used.
+            _ = mapper.Received(Quantity.AtLeastOne()).Expression; // Only the Expression should get used.
             Assert.That.ExpressionsAreEqual(expectedExpression, result.Expression);
         }
 

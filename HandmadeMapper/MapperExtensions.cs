@@ -24,7 +24,7 @@ namespace HandmadeMapper
             if (mapper is null)
                 throw new ArgumentNullException(nameof(mapper));
 
-            var originalExpression = mapper.OriginalExpression;
+            var originalExpression = mapper.Expression;
             var mergedExpression = originalExpression.Merge(mergeExtension);
             return mapper.WithExpression(mergedExpression);
         }
