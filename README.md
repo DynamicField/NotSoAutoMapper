@@ -1,4 +1,37 @@
 # HandmadeMapper
-### A simple and extensible library to map DTOs (or anything!) using powerful expressions.
+HandmadeMapper is a simple and extensible library to map DTOs (or anything!) using bare, but powerful, expressions.
+
+It also supports dependency injection.
+
+[![Build Status](https://dev.azure.com/jeuxjeux20/HandmadeMapper/_apis/build/status/jeuxjeux20.HandmadeMapper?branchName=master)](https://dev.azure.com/jeuxjeux20/HandmadeMapper/_build/latest?definitionId=1&branchName=master) ![Nuget](https://img.shields.io/nuget/v/HandmadeMapper?style=plastic) 
 
 [Getting started](https://github.com/jeuxjeux20/HandmadeMapper/wiki/Getting-started)
+
+## Showcase
+
+```cs
+var catDtoMapper = new Mapper<Cat,CatDto>(x => new CatDto
+{
+    Id = x.Id,
+    Name = x.Name,
+    CutenessLevel = x.CutenessLevel
+});
+var personDtoMapper = new Mapper<Person, PersonDto>(x => new PersonDto
+{
+    Id = x.Id,
+    FirstName = x.FirstName,
+    LastName = x.LastName,
+    Cat = Mapper.Include(x.Cat, catDtoMapper) // Use the catDtoMapper
+});
+
+PersonDto personDto = personDtoMapper.Map(somePerson); // personDto.Cat is a CatDto!
+Console.WriteLine($"{personDto.FirstName} has a cute cat named {personDto.Cat.Name}");
+// >>> James has a cute cat named Felix
+```
+
+## Other packages
+
+There also are some packages to extend HandmadeMapper:
+
+* [HandmadeMapper.Extensions.Ioc.DependencyInjection](https://www.nuget.org/packages/HandmadeMapper.Extensions.Ioc.DependencyInjection/) - Use HandmadeMapper with Microsoft.Extensions.DependencyInjection!
+* [HandmadeMapper.Extensions.Ioc.Base](https://www.nuget.org/packages/HandmadeMapper.Extensions.Ioc.Base/) - The base library to use a IoC container of your choice with HandmadeMapper.
