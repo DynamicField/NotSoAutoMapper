@@ -12,7 +12,8 @@ It also supports dependency injection.
   * **HandmadeMapper.Extensions.Ioc.Base** (Base library to use any IoC container)  
   
     ![Nuget](https://img.shields.io/nuget/v/HandmadeMapper.Extensions.Ioc.Base?style=plastic) 
-  * **HandmadeMapper.Extensions.Ioc.DependencyInjection** (Support for `Microsoft.Extensions.DependencyInjection`) 
+  * **HandmadeMapper.Extensions.Ioc.DependencyInjection**   
+    (Support for `Microsoft.Extensions.DependencyInjection`)
   
     ![Nuget](https://img.shields.io/nuget/v/HandmadeMapper.Extensions.Ioc.Base?style=plastic) 
 
