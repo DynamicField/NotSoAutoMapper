@@ -3,9 +3,21 @@ HandmadeMapper is a simple and extensible library to map DTOs (or anything!) usi
 
 It also supports dependency injection.
 
-[![Build Status](https://dev.azure.com/jeuxjeux20/HandmadeMapper/_apis/build/status/jeuxjeux20.HandmadeMapper?branchName=master)](https://dev.azure.com/jeuxjeux20/HandmadeMapper/_build/latest?definitionId=1&branchName=master) ![Nuget](https://img.shields.io/nuget/v/HandmadeMapper?style=plastic) 
+[![Build Status](https://dev.azure.com/jeuxjeux20/HandmadeMapper/_apis/build/status/jeuxjeux20.HandmadeMapper?branchName=master)](https://dev.azure.com/jeuxjeux20/HandmadeMapper/_build/latest?definitionId=1&branchName=master) 
 
-[Getting started](https://github.com/jeuxjeux20/HandmadeMapper/wiki/Getting-started)
+* NuGet packages :
+  * **HandmadeMapper** 
+  
+    ![Nuget](https://img.shields.io/nuget/v/HandmadeMapper?style=plastic) 
+  * **HandmadeMapper.Extensions.Ioc.Base** (Base library to use any IoC container)  
+  
+    ![Nuget](https://img.shields.io/nuget/v/HandmadeMapper.Extensions.Ioc.Base?style=plastic) 
+  * **HandmadeMapper.Extensions.Ioc.DependencyInjection** (Support for `Microsoft.Extensions.DependencyInjection`) 
+  
+    ![Nuget](https://img.shields.io/nuget/v/HandmadeMapper.Extensions.Ioc.Base?style=plastic) 
+
+
+* [Getting started](https://github.com/jeuxjeux20/HandmadeMapper/wiki/Getting-started)
 
 ## Showcase
 
@@ -28,10 +40,3 @@ PersonDto personDto = personDtoMapper.Map(somePerson); // personDto.Cat is a Cat
 Console.WriteLine($"{personDto.FirstName} has a cute cat named {personDto.Cat.Name}");
 // >>> James has a cute cat named Felix
 ```
-
-## Other packages
-
-There also are some packages to extend HandmadeMapper:
-
-* [HandmadeMapper.Extensions.Ioc.DependencyInjection](https://www.nuget.org/packages/HandmadeMapper.Extensions.Ioc.DependencyInjection/) - Use HandmadeMapper with Microsoft.Extensions.DependencyInjection!
-* [HandmadeMapper.Extensions.Ioc.Base](https://www.nuget.org/packages/HandmadeMapper.Extensions.Ioc.Base/) - The base library to use a IoC container of your choice with HandmadeMapper.
