@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HandmadeMapper.Tests", "Han
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HandmadeMapper.Extensions.Ioc.Base", "HandmadeMapper.Extensions.Ioc.Base\HandmadeMapper.Extensions.Ioc.Base.csproj", "{B8A5B502-4E32-4178-9FC0-527102AA2B7B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandmadeMapper.Extensions.Ioc.Base.Tests", "HandmadeMapper.Extensions.Ioc.Base.Tests\HandmadeMapper.Extensions.Ioc.Base.Tests.csproj", "{151927F3-918F-4A88-B808-4AAC4EDA7467}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B8A5B502-4E32-4178-9FC0-527102AA2B7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8A5B502-4E32-4178-9FC0-527102AA2B7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8A5B502-4E32-4178-9FC0-527102AA2B7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{151927F3-918F-4A88-B808-4AAC4EDA7467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{151927F3-918F-4A88-B808-4AAC4EDA7467}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{151927F3-918F-4A88-B808-4AAC4EDA7467}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{151927F3-918F-4A88-B808-4AAC4EDA7467}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
