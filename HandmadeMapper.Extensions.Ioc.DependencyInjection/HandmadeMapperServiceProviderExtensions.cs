@@ -33,7 +33,6 @@ namespace HandmadeMapper.Extensions.Ioc.DependencyInjection
         /// <returns>The original <see cref="IServiceCollection"/>.</returns>
         public static IServiceCollection AddMappersFrom(this IServiceCollection services, Type type)
         {
-            
             HandmadeMapperIocContainerUtilities.AddMappersFrom(type, (method, types, methodGetter) =>
             {
                 services.AddSingleton(types.ServiceType, provider =>
@@ -57,6 +56,18 @@ namespace HandmadeMapper.Extensions.Ioc.DependencyInjection
             return services.AddSingleton(mapper);
         }
 
+        /// <summary>
+        ///     Registers the mapper of the specified type <typeparamref name="T" /> to the specified
+        ///     <see cref="IServiceCollection" />.
+        /// </summary>
+        /// <typeparam name="T">The type of the mapper.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection" /> to register with.</param>
+        /// <returns>The original <see cref="IServiceCollection"/>.</returns>
+        public static IServiceCollection AddMapper<T>(this IServiceCollection services)
+        {
+            HandmadeMapperIocContainerUtilities.AddMapper(typeof(T), GetRegisterSingletonService(services));
+            return services;
+        }
 
         /// <summary>
         ///     Registers the mapper of the specified <paramref name="mapperType" /> to the specified
