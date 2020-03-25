@@ -19,7 +19,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: 'HandmadeMapper.Tests/HandmadeMapper.Tests.csproj'
+    projects: '**/*.Tests.csproj'
     testRunTitle: 'Run tests'
 
 - task: CopyFiles@2
