@@ -9,8 +9,7 @@ namespace HandmadeMapper.Extensions.Ioc.DryIoc
     /// </summary>
     public static class HandmadeMapperDryIocContainerExtensions
     {
-        // TODO: When #248 DryIoc bug will be fixed.
-        // private const string RegisterMapperFromServiceKey = "_registerMappersFrom";
+        private const string RegisterMapperFromServiceKey = "_registerMappersFrom";
 
         /// <summary>
         /// Adds basic HandmadeMapper functionality.
@@ -83,10 +82,8 @@ namespace HandmadeMapper.Extensions.Ioc.DryIoc
             if (rules is null)
                 throw new ArgumentNullException(nameof(rules));
 
-            // TODO: Compare the service key with the actual one, but there is a bug in DryIoc (#248) that makes the serviceKey null.
-
             return rules.WithConcreteTypeDynamicRegistrations(
-                (serviceType, serviceKey) => serviceType.IsGenericType && serviceType.GetGenericTypeDefinition() == typeof(Mapper<,>),
+                (_, serviceKey) => RegisterMapperFromServiceKey.Equals(serviceKey),
                 Reuse.Singleton);
         }
 
@@ -108,12 +105,12 @@ namespace HandmadeMapper.Extensions.Ioc.DryIoc
                     var expression = getter(resolver.Resolve!);
                     try
                     {
-                        return resolver.Resolve(descriptor.ImplementationType, new[] { expression });
+                        return resolver.Resolve(descriptor.ImplementationType, new[] { expression }, serviceKey: RegisterMapperFromServiceKey);
                     }
                     catch (ContainerException e)
                     {
                         throw new ContainerException(e.Error,
-                            "Couldn't resolve the concrete mapper type, you probably forgot to call rules.WithRegisterMappersFromResolver(). \n" + e.Message, e);
+                            "Couldn't resolve the mapper, you probably forgot to call rules.WithRegisterMappersFromResolver(). \n" + e.Message, e);
                     }
                 });
             });
