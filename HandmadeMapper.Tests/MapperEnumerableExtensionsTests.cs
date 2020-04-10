@@ -13,17 +13,14 @@ namespace HandmadeMapper.Tests
         {
             var mapper = CreateDefaultMapper();
 
-            var collection = new[] { 1, 2, 3 };
-            var expected = new[] { 6, 7, 8 };
+            var collection = new[] {1, 2, 3};
+            var expected = new[] {6, 7, 8};
 
             var result = collection.MapWith(mapper).ToList();
 
             CollectionAssert.AreEqual(expected, result);
 
-            foreach (var item in collection)
-            {
-                mapper.Received(Quantity.Exactly(1)).Map(item);
-            }
+            foreach (var item in collection) mapper.Received(Quantity.Exactly(1)).Map(item);
         }
 
         [TestMethod]
@@ -31,8 +28,8 @@ namespace HandmadeMapper.Tests
         {
             var mapper = CreateDefaultMapper();
 
-            var collection = new[] { 1, 2, 3 }.AsQueryable();
-            var expected = new[] { 6, 7, 8 };
+            var collection = new[] {1, 2, 3}.AsQueryable();
+            var expected = new[] {6, 7, 8};
 
             var result = collection.MapWith(mapper).ToList();
 

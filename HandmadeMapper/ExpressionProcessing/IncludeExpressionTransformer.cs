@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 
 namespace HandmadeMapper.ExpressionProcessing
 {
     /// <summary>
-    /// An expression transformer that unwraps <c>Mapper.Include</c> calls with the mapper's expression.
+    ///     An expression transformer that unwraps <c>Mapper.Include</c> calls with the mapper's expression.
     /// </summary>
-    public sealed class UnwrapExpressionTransformer : ExpressionVisitor, IExpressionTransformer
+    public sealed class IncludeExpressionTransformer : ExpressionVisitor, IExpressionTransformer
     {
         /// <summary>
-        /// The default mapper resolvers to use.
+        ///     The default mapper resolvers to use.
         /// </summary>
         public static readonly List<IMapperResolver> DefaultMapperResolvers = new List<IMapperResolver>(0);
 
@@ -19,10 +20,10 @@ namespace HandmadeMapper.ExpressionProcessing
         private MappingContext _currentContext = null!; // Should always be used with Transform<T> anyway.
 
         /// <summary>
-        /// Creates a new <see cref="UnwrapExpressionTransformer"/>.
+        ///     Creates a new <see cref="IncludeExpressionTransformer" />.
         /// </summary>
-        /// <param name="mapperResolvers">The mapper resolvers to use. Defaults to <see cref="DefaultMapperResolvers"/></param>
-        public UnwrapExpressionTransformer(IEnumerable<IMapperResolver>? mapperResolvers = null)
+        /// <param name="mapperResolvers">The mapper resolvers to use. Defaults to <see cref="DefaultMapperResolvers" /></param>
+        public IncludeExpressionTransformer(IEnumerable<IMapperResolver>? mapperResolvers = null)
         {
             _mapperResolvers = mapperResolvers ?? DefaultMapperResolvers.ToArray();
         }
@@ -31,10 +32,10 @@ namespace HandmadeMapper.ExpressionProcessing
         public Expression<T> Transform<T>(Expression<T> source, MappingContext context)
         {
             _currentContext = context;
-            return (Expression<T>)Visit(source);
+            return (Expression<T>) Visit(source);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods",
+        [SuppressMessage("Design", "CA1062:Validate arguments of public methods",
             Justification = "It's an ExpressionVisitor.")]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member: It's an expression visitor
         protected override Expression VisitMethodCall(MethodCallExpression node)
@@ -56,7 +57,7 @@ namespace HandmadeMapper.ExpressionProcessing
                 var sourceArgument = node.Arguments[0]; // x.Thing
                 var mapperArgument = node.Arguments.ElementAtOrDefault(1); // mapper
 
-                Expression expression;
+                LambdaExpression expression;
                 if (mapperArgument != null)
                 {
                     // There we create something like "() => mapper", from "Mapper.Include(x.Thing, mapper)".
@@ -69,14 +70,14 @@ namespace HandmadeMapper.ExpressionProcessing
                     {
                         case Expression mapperResultExpression:
                             CheckRecursion(mapperResultExpression);
-                            expression = mapperResultExpression;
+                            expression = (LambdaExpression) mapperResultExpression;
                             break;
                         case IMapperExpressionProvider mapperResultExpressionProvider:
                             CheckRecursion(mapperResultExpressionProvider);
                             expression = mapperResultExpressionProvider.Expression;
                             break;
                         default:
-                            throw new InvalidOperationException("The mapper is invalid.");
+                            throw TransformerExceptions.InvalidMapperException;
                     }
                 }
                 else
@@ -86,31 +87,20 @@ namespace HandmadeMapper.ExpressionProcessing
                     expression = mapper.Expression;
                 }
 
-                // We get a lambda expression from the mapper:
-                //  y => new Something { Cat = y.Cat }
-                // Then grab the initial source: y
-                var mapperExpression = (LambdaExpression)expression;
-                var mapperInitialSource = mapperExpression.Parameters[0];
-
-                // Now we replace y with x.Thing, in the body:
-                //  new Something { Cat = y.Cat } -> new Something { Cat = x.Thing.Cat }
-                var replacer = new ReplacerVisitor(mapperInitialSource, sourceArgument);
-                var finalExpression = replacer.Replace(mapperExpression.Body);
-
-                // Finally! No need to revisit the expression,
-                // as the mapper should already unwrap the expression by itself.
-                return finalExpression;
+                // Here we do not call base.Visit, because the expression must have already been transformed.
+                return MapperExpressionUtilities.ReplaceMapperExpressionArgument(expression, sourceArgument);
             }
 
             return base.VisitMethodCall(node);
         }
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private void CheckRecursion(object actualMapper)
         {
             if (actualMapper == _currentContext.Mapper)
-                throw new InvalidOperationException("Cannot recursively include the same mapper.");
+                throw TransformerExceptions.RecursiveMapperException;
         }
 
         private void ResolveMapperOrThrow(MethodCallExpression node, out IMapperExpressionProvider mapper)

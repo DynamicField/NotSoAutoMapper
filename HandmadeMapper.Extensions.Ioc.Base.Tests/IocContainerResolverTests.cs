@@ -11,9 +11,13 @@ namespace HandmadeMapper.Extensions.Ioc.Base.Tests
         public void ResolveMapper_BuildsCorrectType()
         {
             Type actualType = null;
-            var resolver = new TestIocContainerMapperResolver(t => { actualType = t; return null; });
+            var resolver = new TestIocContainerMapperResolver(t =>
+            {
+                actualType = t;
+                return null;
+            });
             Expression<Action> methodCallContainer = () => Mapper.Include<object, int>("whatever");
-            var methodCall = (MethodCallExpression)methodCallContainer.Body;
+            var methodCall = (MethodCallExpression) methodCallContainer.Body;
 
             resolver.ResolveMapper(methodCall);
 

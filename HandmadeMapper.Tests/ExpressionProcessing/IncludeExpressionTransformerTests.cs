@@ -10,7 +10,7 @@ namespace HandmadeMapper.Tests.ExpressionProcessing
 {
     [TestClass]
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
-    public class UnwrapExpressionTransformerTests
+    public class IncludeExpressionTransformerTests
     {
         private static readonly Expression<Func<Cat, CatDto>> CatDtoExpression = x => new CatDto
         {
@@ -33,8 +33,8 @@ namespace HandmadeMapper.Tests.ExpressionProcessing
             }
         };
 
-        private static readonly UnwrapExpressionTransformer DefaultUnwrapExpressionTransformer =
-            new UnwrapExpressionTransformer();
+        private static readonly IncludeExpressionTransformer DefaultIncludeExpressionTransformer =
+            new IncludeExpressionTransformer();
 
         [TestMethod]
         public void WithEfIncludeMapper_Unwraps()
@@ -46,7 +46,7 @@ namespace HandmadeMapper.Tests.ExpressionProcessing
                 FavoriteCat = Mapper.Include(x.FavoriteCat, CatDtoMapper)
             };
 
-            var unwrappedExpression = DefaultUnwrapExpressionTransformer.Transform(testExpression);
+            var unwrappedExpression = DefaultIncludeExpressionTransformer.Transform(testExpression);
 
             Assert.That.ExpressionsAreEqual(ExpectedThingDtoExpression, unwrappedExpression);
         }
@@ -61,7 +61,7 @@ namespace HandmadeMapper.Tests.ExpressionProcessing
                 FavoriteCat = Mapper.Include(x.FavoriteCat, CatDtoExpression)
             };
 
-            var unwrappedExpression = DefaultUnwrapExpressionTransformer.Transform(testExpression);
+            var unwrappedExpression = DefaultIncludeExpressionTransformer.Transform(testExpression);
 
             Assert.That.ExpressionsAreEqual(ExpectedThingDtoExpression, unwrappedExpression);
         }
@@ -80,10 +80,10 @@ namespace HandmadeMapper.Tests.ExpressionProcessing
             var mapperResolver = Substitute.For<IMapperResolver>();
             mapperResolver.ResolveMapper(Arg.Any<MethodCallExpression>()).Returns(CatDtoMapper);
 
-            var unwrapProcessor = new UnwrapExpressionTransformer(new[] { mapperResolver });
+            var includeTransformer = new IncludeExpressionTransformer(new[] {mapperResolver});
 
             // Act
-            var unwrappedExpression = unwrapProcessor.Transform(testExpression);
+            var unwrappedExpression = includeTransformer.Transform(testExpression);
 
             // Assert
             Assert.That.ExpressionsAreEqual(ExpectedThingDtoExpression, unwrappedExpression);
@@ -100,7 +100,7 @@ namespace HandmadeMapper.Tests.ExpressionProcessing
             };
 
             Assert.ThrowsException<InvalidOperationException>(() =>
-                DefaultUnwrapExpressionTransformer.Transform(testExpression));
+                DefaultIncludeExpressionTransformer.Transform(testExpression));
         }
 
         [TestMethod]
@@ -109,9 +109,19 @@ namespace HandmadeMapper.Tests.ExpressionProcessing
             Assert.ThrowsException<InvalidOperationException>(() => new DirectRecursionMapper());
         }
 
+        [TestMethod]
+        public void WithNullMapper_Throws()
+        {
+            Expression<Func<object, int>> expression = x =>
+                Mapper.Include(x, (IMapper<object, int>)null!);
+
+            Assert.ThrowsException<InvalidOperationException>(() => 
+                DefaultIncludeExpressionTransformer.Transform(expression));
+        }
+
         private class DirectRecursionMapper : Mapper<Thing, ThingDto>
         {
-            public DirectRecursionMapper() : base(new[] { DefaultUnwrapExpressionTransformer })
+            public DirectRecursionMapper() : base(new[] {DefaultIncludeExpressionTransformer})
             {
                 UseExpression(x => new ThingDto
                 {

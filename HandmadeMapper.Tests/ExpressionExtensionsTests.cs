@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq.Expressions;
 using HandmadeMapper.Tests.TestExtensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -109,6 +110,76 @@ namespace HandmadeMapper.Tests
         }
 
         [TestMethod]
+        public void Merge_ReplacesOriginalValueWithTheValueOnCommonAssignment()
+        {
+            Expression<Func<Thing, ThingDto>> source = x => new ThingDto
+            {
+                Name = x.Name
+            };
+            Expression<Func<Thing, ThingDto>> extension = x => new ThingDto
+            {
+                Name = Merge.OriginalValue<string>() + " meow!"
+            };
+            Expression<Func<Thing, ThingDto>> expected = x => new ThingDto
+            {
+                Name = x.Name + " meow!"
+            };
+
+            var merged = source.Merge(extension);
+
+            Assert.That.ExpressionsAreEqual(expected, merged);
+        }
+
+        [TestMethod]
+        public void Merge_OriginalValueWithNoFallbackOnNewAssignmentThrows()
+        {
+            Expression<Func<Thing, ThingDto>> source = x => new ThingDto
+            {
+                Id = x.Id
+            };
+            Expression<Func<Thing, ThingDto>> extension = x => new ThingDto
+            {
+                Name = Merge.OriginalValue<string>()
+            };
+
+            Assert.ThrowsException<InvalidOperationException>(() => source.Merge(extension));
+        }
+
+        [TestMethod]
+        public void Merge_ReplacesOriginalValueWithFallbackOnNewAssignment()
+        {
+            Expression<Func<Thing, ThingDto>> source = x => new ThingDto
+            {
+                Id = x.Id
+            };
+            Expression<Func<Thing, ThingDto>> extension = x => new ThingDto
+            {
+                Name = Merge.OriginalValue("meow").ToUpper(CultureInfo.InvariantCulture)
+            };
+            Expression<Func<Thing, ThingDto>> expected = x => new ThingDto
+            {
+                Id = x.Id,
+                Name = "meow".ToUpper(CultureInfo.InvariantCulture)
+            };
+
+            var merged = source.Merge(extension);
+
+            Assert.That.ExpressionsAreEqual(expected, merged);
+        }
+
+        [TestMethod]
+        public void OriginalValueNoParameter_ThrowsWhenCalled()
+        {
+            Assert.ThrowsException<InvalidOperationException>(Merge.OriginalValue<string>);
+        }
+
+        [TestMethod]
+        public void OriginalValueWithParameter_ThrowsWhenCalled()
+        {
+            Assert.ThrowsException<InvalidOperationException>(() => Merge.OriginalValue("meow"));
+        }
+
+        [TestMethod]
         public void Merge_ReplacesLambdaParameterOfTheTargetWithTheSourceOne()
         {
             Expression<Func<Thing, ThingDto>> source = x => new ThingDto
@@ -123,11 +194,37 @@ namespace HandmadeMapper.Tests
 
             var merged = source.Merge(extension);
 
-            var nameAssignment = (MemberAssignment)((MemberInitExpression)merged.Body).Bindings[1];
+            var nameAssignment = (MemberAssignment) ((MemberInitExpression) merged.Body).Bindings[1];
             var fieldAccess = (MemberExpression) nameAssignment.Expression;
             var actualParameter = fieldAccess.Expression;
 
             Assert.AreSame(sourceParameter, actualParameter);
+        }
+
+        [TestMethod]
+        public void Merge_WithInvalidSourceThrows()
+        {
+            ThingDto dto = null!;
+            Expression<Func<Thing, ThingDto>> source = x => dto;
+            Expression<Func<Thing, ThingDto>> extension = x => new ThingDto
+            {
+                Name = x.Name
+            };
+
+            Assert.ThrowsException<ArgumentException>(() => source.Merge(extension));
+        }
+
+        [TestMethod]
+        public void Merge_WithInvalidExtensionThrows()
+        {
+            ThingDto dto = null!;
+            Expression<Func<Thing, ThingDto>> source = x => new ThingDto
+            {
+                Name = x.Name
+            };
+            Expression<Func<Thing, ThingDto>> extension = x => dto;
+
+            Assert.ThrowsException<ArgumentException>(() => source.Merge(extension));
         }
     }
 }

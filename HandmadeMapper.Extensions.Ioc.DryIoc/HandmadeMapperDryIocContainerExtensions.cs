@@ -5,14 +5,14 @@ using HandmadeMapper.Extensions.Ioc.Base;
 namespace HandmadeMapper.Extensions.Ioc.DryIoc
 {
     /// <summary>
-    /// Provides extension methods to use DryIoc with HandmadeMapper.
+    ///     Provides extension methods to use DryIoc with HandmadeMapper.
     /// </summary>
     public static class HandmadeMapperDryIocContainerExtensions
     {
         private const string RegisterMapperFromServiceKey = "_registerMappersFrom";
 
         /// <summary>
-        /// Adds basic HandmadeMapper functionality.
+        ///     Adds basic HandmadeMapper functionality.
         /// </summary>
         /// <param name="registrator">The registrator.</param>
         public static void RegisterHandmadeMapper(this IRegistrator registrator)
@@ -21,7 +21,7 @@ namespace HandmadeMapper.Extensions.Ioc.DryIoc
         }
 
         /// <summary>
-        /// Register the specified <paramref name="mapper"/>.
+        ///     Register the specified <paramref name="mapper" />.
         /// </summary>
         /// <typeparam name="TSource">The source type of the mapper.</typeparam>
         /// <typeparam name="TTarget">The target type of the mapper.</typeparam>
@@ -33,10 +33,13 @@ namespace HandmadeMapper.Extensions.Ioc.DryIoc
         public static void RegisterMapper<TSource, TTarget>(this IRegistrator registrator,
             IMapper<TSource, TTarget> mapper, IfAlreadyRegistered? ifAlreadyRegistered = null, Setup? setup = null,
             object? serviceKey = null)
-            => registrator.RegisterInstance(mapper, ifAlreadyRegistered, setup!, serviceKey);
+        {
+            registrator.RegisterInstance(mapper, ifAlreadyRegistered, setup!, serviceKey);
+        }
 
         /// <summary>
-        /// Registers a mapper of type <typeparamref name="T"/>, with all <see cref="IMapper{TInput,TResult}"/> this class implements.
+        ///     Registers a mapper of type <typeparamref name="T" />, with all <see cref="IMapper{TInput,TResult}" /> this class
+        ///     implements.
         /// </summary>
         /// <param name="registrator">The registrator.</param>
         /// <param name="made"></param>
@@ -47,10 +50,10 @@ namespace HandmadeMapper.Extensions.Ioc.DryIoc
             Setup? setup = null, IfAlreadyRegistered? ifAlreadyRegistered = null, object? serviceKey = null)
         {
             HandmadeMapperIocContainerUtilities.AddMapper(typeof(T),
-                                                          GetRegisterSingletonService(registrator, made, setup, ifAlreadyRegistered, serviceKey));
+                GetRegisterSingletonService(registrator, made, setup, ifAlreadyRegistered, serviceKey));
         }
 
-        /// <inheritdoc cref="HandmadeMapperIocContainerUtilities.AddMapper"/>
+        /// <inheritdoc cref="HandmadeMapperIocContainerUtilities.AddMapper" />
         /// <param name="registrator">The registrator.</param>
         /// <param name="mapperType">The type of the mapper to register.</param>
         /// <param name="made"></param>
@@ -61,19 +64,19 @@ namespace HandmadeMapper.Extensions.Ioc.DryIoc
             Setup? setup = null, IfAlreadyRegistered? ifAlreadyRegistered = null, object? serviceKey = null)
         {
             HandmadeMapperIocContainerUtilities.AddMapper(mapperType,
-                                                          GetRegisterSingletonService(registrator, made, setup, ifAlreadyRegistered, serviceKey));
+                GetRegisterSingletonService(registrator, made, setup, ifAlreadyRegistered, serviceKey));
         }
 
         /// <summary>
-        /// <para>
-        /// Adds the resolver to create <c>Mapper</c> objects using <c>RegisterMappersFrom</c>.
-        /// </para>
-        /// <para>
-        /// You can use it on your container like that:
-        /// <code>
+        ///     <para>
+        ///         Adds the resolver to create <c>Mapper</c> objects using <c>RegisterMappersFrom</c>.
+        ///     </para>
+        ///     <para>
+        ///         You can use it on your container like that:
+        ///         <code>
         /// var container = new Container(rules =&gt; rules.WithRegisterMappersFromResolver());
         /// </code>
-        /// </para>
+        ///     </para>
         /// </summary>
         /// <param name="rules">The rules.</param>
         /// <returns>The same rules.</returns>
@@ -88,12 +91,15 @@ namespace HandmadeMapper.Extensions.Ioc.DryIoc
         }
 
 
-        /// <inheritdoc cref="HandmadeMapperIocContainerUtilities.AddMappersFrom"/>
+        /// <inheritdoc cref="HandmadeMapperIocContainerUtilities.AddMappersFrom" />
         /// <typeparam name="T">The type containing the static methods.</typeparam>
         /// <param name="registrator">The registrator.</param>
-        public static void RegisterMappersFrom<T>(this IRegistrator registrator) => registrator.RegisterMappersFrom(typeof(T));
+        public static void RegisterMappersFrom<T>(this IRegistrator registrator)
+        {
+            registrator.RegisterMappersFrom(typeof(T));
+        }
 
-        /// <inheritdoc cref="HandmadeMapperIocContainerUtilities.AddMappersFrom"/>
+        /// <inheritdoc cref="HandmadeMapperIocContainerUtilities.AddMappersFrom" />
         /// <param name="registrator">The registrator.</param>
         /// <param name="type">The type containing the static methods.</param>
         public static void RegisterMappersFrom(this IRegistrator registrator, Type type)
@@ -105,12 +111,14 @@ namespace HandmadeMapper.Extensions.Ioc.DryIoc
                     var expression = getter(resolver.Resolve!);
                     try
                     {
-                        return resolver.Resolve(descriptor.ImplementationType, new[] { expression }, serviceKey: RegisterMapperFromServiceKey);
+                        return resolver.Resolve(descriptor.ImplementationType, new object[] {expression},
+                            serviceKey: RegisterMapperFromServiceKey);
                     }
                     catch (ContainerException e)
                     {
                         throw new ContainerException(e.Error,
-                            "Couldn't resolve the mapper, you probably forgot to call rules.WithRegisterMappersFromResolver(). \n" + e.Message, e);
+                            "Couldn't resolve the mapper, you probably forgot to call rules.WithRegisterMappersFromResolver(). \n" +
+                            e.Message, e);
                     }
                 });
             });

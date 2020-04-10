@@ -1,11 +1,13 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
+using System.Collections.Generic;
+
 namespace HandmadeMapper.Tests
 {
     public class Thing
     {
         public Thing()
         {
-            
         }
 
         public Thing(string name)
@@ -20,6 +22,8 @@ namespace HandmadeMapper.Tests
         public Cat FavoriteCat { get; set; } = null!;
 
         public Thing BestFriend { get; set; } = null!;
+
+        public IList<Cat> Cats { get; set; } = null!;
     }
 
 
@@ -27,7 +31,6 @@ namespace HandmadeMapper.Tests
     {
         public ThingDto()
         {
-
         }
 
         public ThingDto(string name)
@@ -41,6 +44,8 @@ namespace HandmadeMapper.Tests
         public CatDto FavoriteCat { get; set; } = null!;
 
         public ThingDto BestFriend { get; set; } = null!;
+
+        public IList<CatDto> Cats { get; set; } = null!;
     }
 
     public class Cat
@@ -61,5 +66,4 @@ namespace HandmadeMapper.Tests
 
         public ThingDto Owner { get; set; } = null!;
     }
-
 }

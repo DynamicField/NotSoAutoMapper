@@ -6,7 +6,8 @@ namespace HandmadeMapper.ExpressionProcessing
 {
     internal class ReplacerVisitor : ExpressionVisitor
     {
-        private readonly List<(Expression old, Expression @new)> _replacements = new List<(Expression old, Expression @new)>();
+        private readonly List<(Expression old, Expression @new)> _replacements =
+            new List<(Expression old, Expression @new)>();
 
         public ReplacerVisitor(Expression old, Expression @new)
         {
@@ -20,10 +21,7 @@ namespace HandmadeMapper.ExpressionProcessing
         {
             _replacements.AddRange(replacements);
 
-            foreach (var (old, @new) in _replacements)
-            {
-                CheckExpressions(old, @new);
-            }
+            foreach (var (old, @new) in _replacements) CheckExpressions(old, @new);
         }
 
         public Expression Replace(Expression expr)
@@ -34,14 +32,11 @@ namespace HandmadeMapper.ExpressionProcessing
         public override Expression Visit(Expression node)
         {
             foreach (var (old, @new) in _replacements)
-            {
                 if (node == old)
-                {
                     return base.Visit(@new);
-                }
-            }
             return base.Visit(node);
         }
+
         private static void CheckExpressions(Expression old, Expression @new)
         {
             if (old == @new)

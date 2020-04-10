@@ -11,7 +11,9 @@ namespace HandmadeMapper.Tests.TestExtensions
         {
             var success = Lambda.ExpressionsEqual(expected, actual);
 
-            Assert.IsTrue(success, "The expressions didn't match." + NewLine + "Expected: {0}" + NewLine + "Actual: {1}", expected, actual);
+            Assert.IsTrue(success,
+                "The expressions didn't match." + NewLine + "Expected: {0}" + NewLine + "Actual: {1}", expected,
+                actual);
         }
     }
 }
