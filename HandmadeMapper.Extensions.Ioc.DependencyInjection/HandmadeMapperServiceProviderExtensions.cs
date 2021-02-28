@@ -17,7 +17,7 @@ namespace HandmadeMapper.Extensions.Ioc.DependencyInjection
         public static IServiceCollection AddHandmadeMapper(this IServiceCollection services)
         {
             HandmadeMapperIocContainerUtilities.AddHandmadeMapper(GetRegisterSingletonService(services),
-                typeof(IocContainerMapperResolver));
+                typeof(ServiceProviderMapperResolver));
             return services;
         }
 

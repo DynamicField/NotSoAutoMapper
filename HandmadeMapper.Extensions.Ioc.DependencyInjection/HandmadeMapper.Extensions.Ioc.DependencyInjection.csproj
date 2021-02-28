@@ -14,10 +14,10 @@
     <PackageTags>handmademapper dependencyinjection ioc microsoft aspnetcore efcore</PackageTags>
     <PackageIcon>logo_512x512.png</PackageIcon>
     <PackageIconUrl />
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
-    <Version>1.1.0</Version>
-    <PackageReleaseNotes>Added AddMappersFrom&lt;T&gt;().</PackageReleaseNotes>
+    <AssemblyVersion>1.1.1.0</AssemblyVersion>
+    <FileVersion>1.1.1.0</FileVersion>
+    <Version>1.1.1</Version>
+    <PackageReleaseNotes>Fixed AddHandmadeMapper().</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
