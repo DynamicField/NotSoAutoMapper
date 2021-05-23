@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <Nullable>Enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>jeuxjeux20</Authors>
+    <Product />
+    <Description>A simple and extensible library to map DTOs (or anything!) using powerful expressions.</Description>
+    <PackageProjectUrl>https://github.com/jeuxjeux20/NotSoAutoMapper</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>logo_512x512.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/jeuxjeux20/NotSoAutoMapper</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>handmademapper mapper dto expression entityframework ef efcore entityframeworkcore map</PackageTags>
+    <PackageReleaseNotes>
+      3.0.0-preview1:
+      * Removed support for Lazy mappers
+      * Split expression transformers into IMapperExpressionTransformer and IMethodExpressionTransformer
+      * Added a TransformedUsingAttribute to invoke a method transformer for the target method
+      * Removed recursion prevention as it is not longer possible to have recursion with eager-loading mappers
+      * Removed MapperOptions
+    </PackageReleaseNotes>
+    <Version>3.0.0-preview1</Version>
+    <AssemblyVersion>3.0.0</AssemblyVersion>
+    <FileVersion>3.0.0</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Nullable" Version="1.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\logo_512x512.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

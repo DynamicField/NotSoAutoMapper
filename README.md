@@ -1,24 +1,20 @@
-# HandmadeMapper
-HandmadeMapper is a simple and extensible library to map DTOs (or anything!) using bare, but powerful, expressions.
+# NotSoAutoMapper
+A library to map your DTOs with reusable expressions.
 
-It also supports dependency injection.
-
-[![Build Status](https://dev.azure.com/jeuxjeux20/HandmadeMapper/_apis/build/status/jeuxjeux20.HandmadeMapper?branchName=master)](https://dev.azure.com/jeuxjeux20/HandmadeMapper/_build/latest?definitionId=1&branchName=master) 
+[![Build Status](https://dev.azure.com/jeuxjeux20/NotSoAutoMapper/_apis/build/status/jeuxjeux20.NotSoAutoMapper?branchName=master)](https://dev.azure.com/jeuxjeux20/NotSoAutoMapper/_build/latest?definitionId=1&branchName=master) 
 
 * NuGet packages :
-  * **HandmadeMapper** 
+  * **NotSoAutoMapper** 
   
-    ![Nuget](https://img.shields.io/nuget/v/HandmadeMapper?style=plastic) 
-  * **HandmadeMapper.Extensions.Ioc.Base** (Base library to use any IoC container)  
+    ![Nuget](https://img.shields.io/nuget/v/NotSoAutoMapper?style=plastic) 
+  * **NotSoAutoMapper.Extensions.Ioc.Base** (Base library to use any IoC container)  
   
-    ![Nuget](https://img.shields.io/nuget/v/HandmadeMapper.Extensions.Ioc.Base?style=plastic) 
-  * **HandmadeMapper.Extensions.Ioc.DependencyInjection**   
+    ![Nuget](https://img.shields.io/nuget/v/NotSoAutoMapper.Extensions.Ioc.DependencyInjection?style=plastic) 
+  * **NotSoAutoMapper.Extensions.Ioc.DependencyInjection**   
     (Support for `Microsoft.Extensions.DependencyInjection`)
-  
-    ![Nuget](https://img.shields.io/nuget/v/HandmadeMapper.Extensions.Ioc.Base?style=plastic) 
 
 
-* [Getting started](https://github.com/jeuxjeux20/HandmadeMapper/wiki/Getting-started)
+* [Getting started](https://github.com/jeuxjeux20/NotSoAutoMapper/wiki/Getting-started)
 
 ## Showcase
 
@@ -34,7 +30,7 @@ var personDtoMapper = new Mapper<Person, PersonDto>(x => new PersonDto
     Id = x.Id,
     FirstName = x.FirstName,
     LastName = x.LastName,
-    Cat = Mapper.Include(x.Cat, catDtoMapper) // Use the catDtoMapper
+    Cat = x.Cat.MapWith(catDtoMapper) // Use the catDtoMapper
 });
 
 PersonDto personDto = personDtoMapper.Map(somePerson); // personDto.Cat is a CatDto!
