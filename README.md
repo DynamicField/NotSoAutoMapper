@@ -12,7 +12,7 @@ A library to map your DTOs with reusable expressions.
     ![Nuget](https://img.shields.io/nuget/v/NotSoAutoMapper.Extensions.Ioc.DryIoc?style=plastic)    
 
 
-* [Documentation](https://github.com/jeuxjeux20/NotSoAutoMapper/wiki/Getting-started)
+* [Documentation](https://github.com/jeuxjeux20/NotSoAutoMapper/wiki)
 
 ## Showcase
 
