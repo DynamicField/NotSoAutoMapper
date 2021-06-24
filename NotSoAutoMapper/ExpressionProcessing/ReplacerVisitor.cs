@@ -35,11 +35,11 @@ namespace NotSoAutoMapper.ExpressionProcessing
             {
                 if (node == old)
                 {
-                    return base.Visit(@new);
+                    return base.Visit(@new)!;
                 }
             }
 
-            return base.Visit(node);
+            return base.Visit(node)!;
         }
 
         private static void CheckExpressions(Expression old, Expression @new)

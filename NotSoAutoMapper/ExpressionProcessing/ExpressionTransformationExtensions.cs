@@ -25,8 +25,6 @@ namespace NotSoAutoMapper.ExpressionProcessing
         /// <param name="expression">The expression to transform.</param>
         /// <returns>The transformed expression.</returns>
         public static Expression<T> ApplyTransformations<T>(this Expression<T> expression)
-            => s_applyTransformationsVisitor.VisitAndConvert(expression, nameof(ApplyTransformations));
+            => s_applyTransformationsVisitor.VisitAndConvert(expression, nameof(ApplyTransformations))!;
     }
-
-
 }

@@ -43,7 +43,7 @@ namespace NotSoAutoMapper.Tests
         {
             var mapper = Substitute.For<IMapper<int, int>>();
             mapper.Expression.Returns(x => x + 5);
-            mapper.OriginalExpression.Returns(x => mapper.Expression);
+            mapper.OriginalExpression.Returns(_ => mapper.Expression);
             mapper.Map(Arg.Any<int>()).Returns(x => mapper.Expression.Compile().Invoke(x.Arg<int>()));
             return mapper;
         }

@@ -229,7 +229,7 @@ namespace NotSoAutoMapper
         /// <summary>
         ///     Creates a new mapper with the expression of the specified <paramref name="mapper" /> with the specified
         ///     <paramref name="mergeExtension" />,
-        ///     using <see cref="Merge{TBaseInput,TInput,TBaseResult,TResult}" />.
+        ///     using <see cref="Merge{TBaseInput,TInput,TBaseResult,TResult}(System.Linq.Expressions.Expression{System.Func{TBaseInput,TBaseResult}},System.Linq.Expressions.Expression{System.Func{TInput,TResult}})" />.
         /// </summary>
         /// <typeparam name="TInput">The input type of the mapper.</typeparam>
         /// <typeparam name="TResult">The result type of the mapper.</typeparam>
@@ -238,7 +238,6 @@ namespace NotSoAutoMapper
         /// <param name="mapper">The mapper containing the expression to merge.</param>
         /// <param name="mergeExtension">The expression that will be merged with the <paramref name="mapper" />'s expression.</param>
         /// <returns>A mapper with the merged expression, created using <see cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />.</returns>
-        /// <seealso cref="MergingExtensions.Merge{T}" />
         /// <seealso cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />
         public static IMapper<TInput, TResult> Merge<TBaseInput, TInput, TBaseResult, TResult>(
             this IMapper<TBaseInput, TBaseResult> mapper,
@@ -259,14 +258,15 @@ namespace NotSoAutoMapper
         /// <summary>
         ///     Creates a new mapper with the original expression of the specified <paramref name="mapper" /> with the specified
         ///     <paramref name="mergeExtension" />,
-        ///     using <see cref="MergingExtensions.Merge{T}" />.
+        ///     using <see cref="Merge{TBaseInput,TInput,TBaseResult,TResult}(System.Linq.Expressions.Expression{System.Func{TBaseInput,TBaseResult}},System.Linq.Expressions.Expression{System.Func{TInput,TResult}})" />.
         /// </summary>
         /// <typeparam name="TInput">The input type of the mapper.</typeparam>
         /// <typeparam name="TResult">The result type of the mapper.</typeparam>
+        /// <typeparam name="TBaseInput">The base input type of the source mapper.</typeparam>
+        /// <typeparam name="TBaseResult">The base result type of the source mapper.</typeparam>
         /// <param name="mapper">The mapper containing the expression to merge.</param>
         /// <param name="mergeExtension">The expression that will be merged with the <paramref name="mapper" />'s expression.</param>
         /// <returns>A mapper with the merged expression, created using <see cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />.</returns>
-        /// <seealso cref="MergingExtensions.Merge{T}" />
         /// <seealso cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />
         public static IMapper<TInput, TResult> MergeOriginal<TBaseInput, TInput, TBaseResult, TResult>(
             this IMapper<TBaseInput, TBaseResult> mapper,
@@ -286,7 +286,7 @@ namespace NotSoAutoMapper
     }
 
     /// <summary>
-    ///     Contains helper methods for the <see cref="MergingExtensions.Merge{T}" /> method.
+    ///     Contains helper methods for expression merging.
     /// </summary>
     public static class Merge
     {

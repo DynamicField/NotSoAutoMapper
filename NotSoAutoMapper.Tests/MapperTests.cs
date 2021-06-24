@@ -27,12 +27,12 @@ namespace NotSoAutoMapper.Tests
         [TestMethod]
         public void Map_MapsObjectFromExpression()
         {
-            const int number = 1;
+            const int Number = 1;
             var mapper = new Mapper<int, int>(x => x + 5);
 
-            var result = mapper.Map(number);
+            var result = mapper.Map(Number);
 
-            Assert.AreEqual(number + 5, result);
+            Assert.AreEqual(Number + 5, result);
         }
 
         [TestMethod]
