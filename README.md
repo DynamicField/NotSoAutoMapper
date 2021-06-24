@@ -4,17 +4,15 @@ A library to map your DTOs with reusable expressions.
 [![Build Status](https://dev.azure.com/jeuxjeux20/NotSoAutoMapper/_apis/build/status/jeuxjeux20.NotSoAutoMapper?branchName=master)](https://dev.azure.com/jeuxjeux20/NotSoAutoMapper/_build/latest?definitionId=1&branchName=master) 
 
 * NuGet packages :
-  * **NotSoAutoMapper** 
-  
-    ![Nuget](https://img.shields.io/nuget/v/NotSoAutoMapper?style=plastic) 
-  * **NotSoAutoMapper.Extensions.Ioc.Base** (Base library to use any IoC container)  
-  
-    ![Nuget](https://img.shields.io/nuget/v/NotSoAutoMapper.Extensions.Ioc.DependencyInjection?style=plastic) 
-  * **NotSoAutoMapper.Extensions.Ioc.DependencyInjection**   
-    (Support for `Microsoft.Extensions.DependencyInjection`)
+  * **NotSoAutoMapper**   
+    ![Nuget](https://img.shields.io/nuget/v/NotSoAutoMapper?style=plastic)
+  * **NotSoAutoMapper.Extensions.Ioc.DependencyInjection**: support for MS DI  
+    ![Nuget](https://img.shields.io/nuget/v/NotSoAutoMapper.Extensions.Ioc.DependencyInjection?style=plastic)    
+  * **NotSoAutoMapper.Extensions.Ioc.DryIoc**: support for DryIoc   
+    ![Nuget](https://img.shields.io/nuget/v/NotSoAutoMapper.Extensions.Ioc.DryIoc?style=plastic)    
 
 
-* [Getting started](https://github.com/jeuxjeux20/NotSoAutoMapper/wiki/Getting-started)
+* [Documentation](https://github.com/jeuxjeux20/NotSoAutoMapper/wiki)
 
 ## Showcase
 
