@@ -133,7 +133,8 @@ namespace NotSoAutoMapper
         }
 
         /// <inheritdoc />
-        public virtual IMapper<TInput, TResult> WithExpression(Expression<Func<TInput, TResult>> expression) => new Mapper<TInput, TResult>(expression, BeforeExpressionTransformers, AfterExpressionTransformers);
+        public virtual IMapper<TNewInput, TNewResult> WithExpression<TNewInput, TNewResult>(Expression<Func<TNewInput, TNewResult>> expression) 
+            => new Mapper<TNewInput, TNewResult>(expression, BeforeExpressionTransformers, AfterExpressionTransformers);
 
         /// <summary>
         ///     Sets the mapper's <see cref="Expression" /> to the specified <paramref name="expression" />,

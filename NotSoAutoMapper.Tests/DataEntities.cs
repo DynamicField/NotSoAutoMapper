@@ -53,6 +53,16 @@ namespace NotSoAutoMapper.Tests
         public IList<CatDto> Cats { get; set; } = new List<CatDto>();
     }
 
+    public class BetterThing : Thing
+    {
+        public string FavoriteSentence { get; set; } = null!;
+    }
+
+    public class BetterThingDto : ThingDto
+    {
+        public string FavoriteSentence { get; set; } = null!;
+    }
+
     public class Cat
     {
         public int Id { get; set; }

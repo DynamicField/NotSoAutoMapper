@@ -43,7 +43,7 @@ namespace NotSoAutoMapper
         /// </summary>
         /// <param name="expression">The mapping expression to use.</param>
         /// <returns>A mapper with the specified <paramref name="expression" /></returns>
-        IMapper<TInput, TResult> WithExpression(Expression<Func<TInput, TResult>> expression);
+        IMapper<TNewInput, TNewResult> WithExpression<TNewInput, TNewResult>(Expression<Func<TNewInput, TNewResult>> expression);
     }
 
     /// <summary>

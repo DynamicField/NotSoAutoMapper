@@ -10,7 +10,7 @@ namespace NotSoAutoMapper
     /// <summary>
     ///     Provides extension methods for manipulating expressions.
     /// </summary>
-    public static class ExpressionExtensions
+    public static class MergingExtensions
     {
         /// <summary>
         ///     <para>
@@ -40,8 +40,8 @@ namespace NotSoAutoMapper
         ///         <para>
         ///             Calls to <see cref="NotSoAutoMapper.Merge.OriginalValue{T}()" /> are also replaced.
         ///         </para>
-        ///         Finally, the lambda parameters used in <paramref name="extension" /> get replaced with the ones of
-        ///         <paramref name="source" />.
+        ///         Finally, the lambda parameters used in <paramref name="source" /> get replaced with the ones of
+        ///         <paramref name="extension" />.
         ///     </para>
         /// </summary>
         /// <example>
@@ -87,11 +87,17 @@ namespace NotSoAutoMapper
         /// }
         /// </code>
         /// </example>
-        /// <typeparam name="T">The generic parameter of the <see cref="Expression{TDelegate}" />.</typeparam>
+        /// <typeparam name="TBaseInput">The input of the source expression.</typeparam>
+        /// <typeparam name="TInput">The input of the new expression, derived from <typeparamref name="TBaseInput"/>.</typeparam>
+        /// <typeparam name="TBaseResult">The result of the source expression.</typeparam>
+        /// <typeparam name="TResult">The result of the new expression, derived from <typeparamref name="TBaseResult"/>.</typeparam>
         /// <param name="source">The source expression which will be merged with <paramref name="extension" />.</param>
         /// <param name="extension">The extension expression, to merge with <paramref name="source" />.</param>
         /// <returns>The result of merging <paramref name="source" /> and <paramref name="extension" />.</returns>
-        public static Expression<T> Merge<T>(this Expression<T> source, Expression<T> extension)
+        public static Expression<Func<TInput, TResult>> Merge<TBaseInput, TInput, TBaseResult, TResult>(
+            this Expression<Func<TBaseInput, TBaseResult>> source, Expression<Func<TInput, TResult>> extension)
+            where TResult : TBaseResult
+            where TInput : TBaseInput
         {
             if (source is null)
             {
@@ -122,15 +128,14 @@ namespace NotSoAutoMapper
             var extensionParameters = extension.Parameters;
 
             var mergedBody = Merge(targetInit, extensionInit);
-            var mergedLambda = Expression.Lambda<T>(mergedBody, originalParameters);
+            var mergedLambda = Expression.Lambda<Func<TInput, TResult>>(mergedBody, extensionParameters);
 
-            // Here we use the extension's parameters as the old ones to replace them with the originals.
-            // This also works reverse but it makes more sense to keep the source's parameters.
+            // Here we use the source parameters as the old ones to replace them with the extension ones.
             var replacements =
-                extensionParameters.Zip(originalParameters, (old, @new) => ((Expression) old, (Expression) @new));
+                originalParameters.Zip(extensionParameters, (old, @new) => ((Expression) old, (Expression) @new));
             var replacer = new ReplacerVisitor(replacements);
 
-            return (Expression<T>) replacer.Replace(mergedLambda);
+            return (Expression<Func<TInput, TResult>>) replacer.Replace(mergedLambda);
         }
 
         private static MemberInitExpression Merge(MemberInitExpression source, MemberInitExpression extension)
@@ -140,22 +145,24 @@ namespace NotSoAutoMapper
             var sourceAssignments = source.Bindings.OfType<MemberAssignment>().ToList();
             var extensionAssignments = extension.Bindings.OfType<MemberAssignment>().ToList();
 
+            // Those are the assignments that are present in both the source and the extension.
             var commonAssignments =
-                (from targetAssignment in sourceAssignments
-                    join extensionAssignment in extensionAssignments on targetAssignment.Member equals
+                (from sourceAssignment in sourceAssignments
+                    join extensionAssignment in extensionAssignments on sourceAssignment.Member equals
                         extensionAssignment.Member
-                    select (targetAssignment, extensionAssignment)).ToList();
+                    select (sourceAssignment, extensionAssignment)).ToList();
 
+            // Those are the assignments only present in either the source or the assignment.
             // There we also replace OriginalValue<T>(), but it only takes the fallback value, or throws.
-            var newAssignments = extensionAssignments.Except(commonAssignments.Select(c => c.extensionAssignment))
+            var uncommonAssignments = extensionAssignments
+                .Concat(sourceAssignments)
+                .Where(x => !commonAssignments.Any(a => a.sourceAssignment == x || a.extensionAssignment == x))
                 .Select(x => x.Update(originalValueVisitor.ReplaceOriginalValue(x.Expression, null)));
 
-            var mergedBindings = new List<MemberBinding>(sourceAssignments.Concat(newAssignments));
+            var allBindings = new List<MemberBinding>(uncommonAssignments);
 
             foreach (var (sourceAssignment, extensionAssignment) in commonAssignments)
             {
-                mergedBindings.Remove(sourceAssignment);
-
                 MemberAssignment assignment;
 
                 // In the case we have two MemberInitExpressions, merge them. 
@@ -176,10 +183,10 @@ namespace NotSoAutoMapper
                     originalValueVisitor.ReplaceOriginalValue(assignment.Expression, sourceAssignment);
                 assignment = assignment.Update(processedExpression);
 
-                mergedBindings.Add(assignment);
+                allBindings.Add(assignment);
             }
 
-            return source.Update(source.NewExpression, mergedBindings);
+            return source.Update(extension.NewExpression, allBindings);
         }
 
         private class OriginalValueVisitor : ExpressionVisitor
@@ -189,7 +196,7 @@ namespace NotSoAutoMapper
             public Expression ReplaceOriginalValue(Expression expression, MemberAssignment? sourceAssignment)
             {
                 _sourceAssignment = sourceAssignment;
-                return Visit(expression);
+                return Visit(expression)!;
             }
 
             protected override Expression VisitMethodCall(MethodCallExpression node)
@@ -205,23 +212,81 @@ namespace NotSoAutoMapper
 
                 var originalValue = _sourceAssignment?.Expression;
 
-                originalValue = originalValue switch
-                {
+                originalValue = originalValue switch {
                     // Use fallback
                     null when method == MergeMethods.OriginalValueWithFallbackMethod => node.Arguments[0],
                     // No fallback? You're screwed!
                     null when method == MergeMethods.OriginalValueNoParamsMethod => throw NotSoAutoMapper.Merge
                         .OriginalValueException(),
+                    null => throw new NotSupportedException("Unknown OriginalValue method."),
                     _ => originalValue
                 };
 
-                return Visit(originalValue);
+                return Visit(originalValue)!;
             }
+        }
+
+        /// <summary>
+        ///     Creates a new mapper with the expression of the specified <paramref name="mapper" /> with the specified
+        ///     <paramref name="mergeExtension" />,
+        ///     using <see cref="Merge{TBaseInput,TInput,TBaseResult,TResult}" />.
+        /// </summary>
+        /// <typeparam name="TInput">The input type of the mapper.</typeparam>
+        /// <typeparam name="TResult">The result type of the mapper.</typeparam>
+        /// <typeparam name="TBaseInput">The base input type of the source mapper.</typeparam>
+        /// <typeparam name="TBaseResult">The base result type of the source mapper.</typeparam>
+        /// <param name="mapper">The mapper containing the expression to merge.</param>
+        /// <param name="mergeExtension">The expression that will be merged with the <paramref name="mapper" />'s expression.</param>
+        /// <returns>A mapper with the merged expression, created using <see cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />.</returns>
+        /// <seealso cref="MergingExtensions.Merge{T}" />
+        /// <seealso cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />
+        public static IMapper<TInput, TResult> Merge<TBaseInput, TInput, TBaseResult, TResult>(
+            this IMapper<TBaseInput, TBaseResult> mapper,
+            Expression<Func<TInput, TResult>> mergeExtension)
+            where TInput : TBaseInput
+            where TResult : TBaseResult
+        {
+            if (mapper is null)
+            {
+                throw new ArgumentNullException(nameof(mapper));
+            }
+
+            var originalExpression = mapper.Expression;
+            var mergedExpression = originalExpression.Merge(mergeExtension);
+            return mapper.WithExpression(mergedExpression);
+        }
+
+        /// <summary>
+        ///     Creates a new mapper with the original expression of the specified <paramref name="mapper" /> with the specified
+        ///     <paramref name="mergeExtension" />,
+        ///     using <see cref="MergingExtensions.Merge{T}" />.
+        /// </summary>
+        /// <typeparam name="TInput">The input type of the mapper.</typeparam>
+        /// <typeparam name="TResult">The result type of the mapper.</typeparam>
+        /// <param name="mapper">The mapper containing the expression to merge.</param>
+        /// <param name="mergeExtension">The expression that will be merged with the <paramref name="mapper" />'s expression.</param>
+        /// <returns>A mapper with the merged expression, created using <see cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />.</returns>
+        /// <seealso cref="MergingExtensions.Merge{T}" />
+        /// <seealso cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />
+        public static IMapper<TInput, TResult> MergeOriginal<TBaseInput, TInput, TBaseResult, TResult>(
+            this IMapper<TBaseInput, TBaseResult> mapper,
+            Expression<Func<TInput, TResult>> mergeExtension)
+            where TInput : TBaseInput
+            where TResult : TBaseResult
+        {
+            if (mapper is null)
+            {
+                throw new ArgumentNullException(nameof(mapper));
+            }
+
+            var originalExpression = mapper.OriginalExpression;
+            var mergedExpression = originalExpression.Merge(mergeExtension);
+            return mapper.WithExpression(mergedExpression);
         }
     }
 
     /// <summary>
-    ///     Contains helper methods for the <see cref="ExpressionExtensions.Merge{T}" /> method.
+    ///     Contains helper methods for the <see cref="MergingExtensions.Merge{T}" /> method.
     /// </summary>
     public static class Merge
     {
@@ -250,9 +315,9 @@ namespace NotSoAutoMapper
         public static T OriginalValue<T>(T fallback) => throw OriginalValueException();
 
         internal static InvalidOperationException OriginalValueException() => new(
-                $"{nameof(OriginalValue)} has failed, this is due to one of these reasons:{Environment.NewLine}" +
-                $"- This method has been called outside of the {nameof(ExpressionExtensions.Merge)} method.{Environment.NewLine}" +
-                "- The original value has not been found in the original expression, and no fallback value has been provided.");
+            $"{nameof(OriginalValue)} has failed, this is due to one of these reasons:{Environment.NewLine}" +
+            $"- This method has been called outside of the {nameof(MergingExtensions.Merge)} method.{Environment.NewLine}" +
+            "- The original value has not been found in the original expression, and no fallback value has been provided.");
     }
 
     internal static class MergeMethods
@@ -261,7 +326,8 @@ namespace NotSoAutoMapper
 
         public static readonly MethodInfo OriginalValueWithFallbackMethod = OriginalValueOfParamsLength(1);
 
-        private static MethodInfo OriginalValueOfParamsLength(int length) => typeof(Merge).GetMethods(BindingFlags.Static | BindingFlags.Public)
-                .First(x => x.Name == nameof(Merge.OriginalValue) && x.GetParameters().Length == length);
+        private static MethodInfo OriginalValueOfParamsLength(int length) => typeof(Merge)
+            .GetMethods(BindingFlags.Static | BindingFlags.Public)
+            .First(x => x.Name == nameof(Merge.OriginalValue) && x.GetParameters().Length == length);
     }
 }

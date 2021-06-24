@@ -16,6 +16,10 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>handmademapper mapper dto expression entityframework ef efcore entityframeworkcore map</PackageTags>
     <PackageReleaseNotes>
+      3.0.0-preview2:
+      * Added custom TransformedUsing attributes
+      * Added inheritance for Merge
+      
       3.0.0-preview1:
       * Removed support for Lazy mappers
       * Split expression transformers into IMapperExpressionTransformer and IMethodExpressionTransformer
@@ -23,7 +27,7 @@
       * Removed recursion prevention as it is not longer possible to have recursion with eager-loading mappers
       * Removed MapperOptions
     </PackageReleaseNotes>
-    <Version>3.0.0-preview1</Version>
+    <Version>3.0.0-preview2</Version>
     <AssemblyVersion>3.0.0</AssemblyVersion>
     <FileVersion>3.0.0</FileVersion>
   </PropertyGroup>

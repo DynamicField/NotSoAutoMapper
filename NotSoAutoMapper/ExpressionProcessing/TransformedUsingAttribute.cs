@@ -4,8 +4,9 @@ namespace NotSoAutoMapper.ExpressionProcessing
 {
     /// <summary>
     /// Defines how should this method call be transformed.
+    /// This attribute can be inherited to create custom attributes applying transformations.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class TransformedUsingAttribute : Attribute
     {
         /// <summary>
@@ -18,12 +19,9 @@ namespace NotSoAutoMapper.ExpressionProcessing
         /// </param>
         public TransformedUsingAttribute(Type methodExpressionTransformerType)
         {
-            if (methodExpressionTransformerType is null)
-            {
-                throw new ArgumentNullException(nameof(methodExpressionTransformerType));
-            }
-
-            MethodExpressionTransformerType = methodExpressionTransformerType;
+            MethodExpressionTransformerType = methodExpressionTransformerType
+                                              ?? throw new ArgumentNullException(
+                                                  nameof(methodExpressionTransformerType));
         }
 
         /// <summary>
