@@ -52,13 +52,15 @@ namespace NotSoAutoMapper.Tests
         public void Merge_MergesInnerMemberInitExpressions()
         {
             Expression<Func<Thing, ThingDto>> source = x =>
-                new ThingDto { FavoriteCat = new CatDto { Id = x.FavoriteCat.Id, Name = x.FavoriteCat.Name } };
+                new ThingDto {
+                    FavoriteCat = new CatDto { Id = x.FavoriteCatNotNull.Id, Name = x.FavoriteCatNotNull.Name }
+                };
             Expression<Func<Thing, ThingDto>> extension = x => new ThingDto {
-                FavoriteCat = new CatDto { Name = x.FavoriteCat.Name + " meow!", CutenessLevel = 99 }
+                FavoriteCat = new CatDto { Name = x.FavoriteCatNotNull.Name + " meow!", CutenessLevel = 99 }
             };
             Expression<Func<Thing, ThingDto>> expected = x => new ThingDto {
                 FavoriteCat = new CatDto {
-                    Id = x.FavoriteCat.Id, Name = x.FavoriteCat.Name + " meow!", CutenessLevel = 99
+                    Id = x.FavoriteCatNotNull.Id, Name = x.FavoriteCatNotNull.Name + " meow!", CutenessLevel = 99
                 }
             };
 
@@ -178,7 +180,7 @@ namespace NotSoAutoMapper.Tests
 
             Assert.That.ExpressionsAreEqual(expected, merged);
         }
-        
+
         // Mapper merging
 
         [TestMethod]
@@ -213,6 +215,8 @@ namespace NotSoAutoMapper.Tests
 
         private static IMapper<TInput, TResult> CreateMapperSubstitute<TInput, TResult>(
             Expression<Func<TInput, TResult>> expression, Expression<Func<TInput, TResult>>? originalExpression = null)
+            where TInput : notnull 
+            where TResult : notnull
         {
             var mapper = Substitute.For<IMapper<TInput, TResult>>();
             mapper.OriginalExpression.Returns(originalExpression ?? expression);

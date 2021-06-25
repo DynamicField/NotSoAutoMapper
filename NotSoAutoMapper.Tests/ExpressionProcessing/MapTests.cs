@@ -22,7 +22,7 @@ namespace NotSoAutoMapper.Tests.ExpressionProcessing
         {
             Id = x.Id,
             Name = x.Name,
-            FavoriteCat = new CatDto
+            FavoriteCat = x.FavoriteCat == null ? null : new CatDto
             {
                 Id = x.FavoriteCat.Id,
                 Name = x.FavoriteCat.Name,

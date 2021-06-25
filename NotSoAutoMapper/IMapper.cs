@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using NotSoAutoMapper.ExpressionProcessing;
 
@@ -16,6 +17,8 @@ namespace NotSoAutoMapper
     /// <typeparam name="TInput">The input type the mapper is using.</typeparam>
     /// <typeparam name="TResult">The result type the mapper will give.</typeparam>
     public interface IMapper<TInput, TResult> : IMapper
+        where TInput : notnull
+        where TResult : notnull
     {
         /// <summary>
         ///     The original expression used, before any transformation occured.
@@ -29,21 +32,27 @@ namespace NotSoAutoMapper
         /// <seealso
         ///     cref="MapWithExtensions.MapWith{TInput,TResult}(System.Linq.IQueryable{TInput},IMapper{TInput,TResult})" />
         new Expression<Func<TInput, TResult>> Expression { get; }
-        
+
         /// <summary>
         ///     Maps a <typeparamref name="TInput" /> object to a <typeparamref name="TResult" /> object.
+        ///     If the source is equal to its default value, no mapping is applied and the default value
+        ///     will be returned.
         /// </summary>
         /// <param name="source">The object to map.</param>
         /// <returns>The mapped object.</returns>
         [TransformedUsing(typeof(MapExpressionTransformer))]
-        TResult Map(TInput source);
+        [return: NotNullIfNotNull("source")]
+        TResult? Map(TInput? source);
 
         /// <summary>
         ///     Create a new mapper with the same configuration, but with a different expression.
         /// </summary>
         /// <param name="expression">The mapping expression to use.</param>
         /// <returns>A mapper with the specified <paramref name="expression" /></returns>
-        IMapper<TNewInput, TNewResult> WithExpression<TNewInput, TNewResult>(Expression<Func<TNewInput, TNewResult>> expression);
+        IMapper<TNewInput, TNewResult> WithExpression<TNewInput, TNewResult>(
+            Expression<Func<TNewInput, TNewResult>> expression)
+            where TNewInput : notnull
+            where TNewResult : notnull;
     }
 
     /// <summary>

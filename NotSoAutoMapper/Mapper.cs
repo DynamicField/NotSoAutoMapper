@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using NotSoAutoMapper.ExpressionProcessing;
 
@@ -12,6 +13,8 @@ namespace NotSoAutoMapper
     /// <typeparam name="TInput">The input type the mapper is using.</typeparam>
     /// <typeparam name="TResult">The result type the mapper will give.</typeparam>
     public class Mapper<TInput, TResult> : IMapper<TInput, TResult>
+        where TInput : notnull
+        where TResult : notnull
     {
         private Expression<Func<TInput, TResult>>? _actualExpression;
         private readonly Lazy<Func<TInput, TResult>>? _compiledExpression;
@@ -67,8 +70,8 @@ namespace NotSoAutoMapper
 
         // Private clone constructor
         private Mapper(Expression<Func<TInput, TResult>> expression,
-                       IReadOnlyList<IMapperExpressionTransformer> beforeExpressionTransformers,
-                       IReadOnlyList<IMapperExpressionTransformer> afterExpressionTransformers)
+            IReadOnlyList<IMapperExpressionTransformer> beforeExpressionTransformers,
+            IReadOnlyList<IMapperExpressionTransformer> afterExpressionTransformers)
         {
             BeforeExpressionTransformers = beforeExpressionTransformers;
             AfterExpressionTransformers = afterExpressionTransformers;
@@ -97,7 +100,7 @@ namespace NotSoAutoMapper
             get
             {
                 _actualExpression ??= ApplyExpressionTransformers(OriginalExpression);
-                return _actualExpression;
+                return _actualExpression!;
             }
             // Can be lazy initialized (UseExpression)
             private set
@@ -122,19 +125,32 @@ namespace NotSoAutoMapper
 
         /// <inheritdoc />
         [TransformedUsing(typeof(MapExpressionTransformer))]
-        public TResult Map(TInput source)
+        [return: NotNullIfNotNull("source")]
+        public TResult? Map(TInput? source)
         {
             if (_compiledExpression is null)
             {
                 throw new InvalidOperationException("There is no expression set up.");
             }
 
-            return _compiledExpression.Value(source);
+            if (EqualityComparer<TInput>.Default.Equals(source!, default!))
+            {
+                return default;
+            }
+
+            return _compiledExpression.Value(source!);
         }
 
-        /// <inheritdoc />
-        public virtual IMapper<TNewInput, TNewResult> WithExpression<TNewInput, TNewResult>(Expression<Func<TNewInput, TNewResult>> expression) 
-            => new Mapper<TNewInput, TNewResult>(expression, BeforeExpressionTransformers, AfterExpressionTransformers);
+        /// <inheritdoc cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />
+        public Mapper<TNewInput, TNewResult> WithExpression<TNewInput, TNewResult>(
+            Expression<Func<TNewInput, TNewResult>> expression)
+            where TNewInput : notnull
+            where TNewResult : notnull
+            => new(expression, BeforeExpressionTransformers, AfterExpressionTransformers);
+
+        IMapper<TNewInput, TNewResult> IMapper<TInput, TResult>.WithExpression<TNewInput, TNewResult>(
+            Expression<Func<TNewInput, TNewResult>> expression)
+            => WithExpression(expression);
 
         /// <summary>
         ///     Sets the mapper's <see cref="Expression" /> to the specified <paramref name="expression" />,

@@ -46,6 +46,16 @@ namespace NotSoAutoMapper.Tests
             Assert.AreSame(newExpression, newMapper.OriginalExpression);
         }
 
+        [TestMethod]
+        public void Map_MapsNullToNull()
+        {
+            var mapper = new Mapper<object, object>(x => new object());
+
+            var result = mapper.Map(null);
+            
+            Assert.IsNull(result);
+        }
+
         private class ShouldThrowExceptionTestMapper : Mapper<object, object>
         {
             public ShouldThrowExceptionTestMapper(IEnumerable<IMapperExpressionTransformer>? expressionTransformers = null) :

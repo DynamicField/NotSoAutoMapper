@@ -39,8 +39,8 @@ namespace NotSoAutoMapper.ExpressionProcessing
             var selectLambda = CreateSelectLambda(sourceItemType, mapper);
             // Make sure we use the correct expression type for the Select method
             var selectLambdaArgument = selectMethod.DeclaringType == typeof(Queryable)
-                    ? Expression.Quote(selectLambda) // As Expression<Func<...>>
-                    : (Expression) selectLambda;  // As Func<...>
+                ? Expression.Quote(selectLambda) // As Expression<Func<...>>
+                : (Expression) selectLambda; // As Func<...>
 
             // Create a Select method with the new generic arguments:
             // Select<TEnumerableItem, TMapperResult>()
@@ -53,12 +53,14 @@ namespace NotSoAutoMapper.ExpressionProcessing
 
             static LambdaExpression CreateSelectLambda(Type enumerableItemType, IMapper mapper)
             {
-                var selectLambdaParameter = Expression.Parameter(enumerableItemType, "map_" + Guid.NewGuid().ToString("N"));
+                var selectLambdaParameter =
+                    Expression.Parameter(enumerableItemType, "map_" + Guid.NewGuid().ToString("N"));
 
-                var mapperExpressionWithParameter = ReplaceMapperExpressionArgument(mapper, selectLambdaParameter);
+                // No need to coalesce in a collection, if you ever have null elements in a collection,
+                // seek help.
+                var mapperExpressionWithParameter = InlineMapper(mapper, selectLambdaParameter, false);
 
-                var selectLambda = Expression.Lambda(mapperExpressionWithParameter, selectLambdaParameter);
-                return selectLambda;
+                return Expression.Lambda(mapperExpressionWithParameter, selectLambdaParameter);
             }
         }
 
@@ -70,7 +72,7 @@ namespace NotSoAutoMapper.ExpressionProcessing
                 throw TransformerExceptions.NullMapperException;
             }
 
-            return ReplaceMapperExpressionArgument(mapper, sourceExpression);
+            return InlineMapper(mapper, sourceExpression, true);
         }
 
         private static Type FindEnumerableType(Type type)
@@ -94,6 +96,7 @@ namespace NotSoAutoMapper.ExpressionProcessing
             {
                 return s_queryableSelectMethod;
             }
+
             if (collectionType.IsGenericType && collectionType.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
                 interfaces.Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
             {
@@ -103,11 +106,11 @@ namespace NotSoAutoMapper.ExpressionProcessing
             throw new NotSupportedException($"Cannot find method for collection type {collectionType}.");
         }
 
-        private static Expression ReplaceMapperExpressionArgument(IMapper mapper, Expression sourceArgument) 
-            => ReplaceMapperExpressionArgument(mapper.Expression, sourceArgument);
+        private static Expression InlineMapper(IMapper mapper, Expression sourceArgument, bool coalesce)
+            => InlineMapper(mapper.Expression, sourceArgument, coalesce);
 
-        private static Expression ReplaceMapperExpressionArgument(LambdaExpression mapperExpression,
-            Expression sourceArgument)
+        private static Expression InlineMapper(LambdaExpression mapperExpression,
+            Expression sourceArgument, bool coalesce)
         {
             // We get a lambda expression from the mapper:
             //  y => new Something { Cat = y.Cat }
@@ -117,9 +120,35 @@ namespace NotSoAutoMapper.ExpressionProcessing
             // Now we replace y with x.Thing, in the body:
             //  new Something { Cat = y.Cat } -> new Something { Cat = x.Thing.Cat }
             var replacer = new ReplacerVisitor(mapperInitialSource, sourceArgument);
-            var finalExpression = replacer.Replace(mapperExpression.Body);
+            var replacedExpression = replacer.Replace(mapperExpression.Body);
 
-            return finalExpression;
+            return coalesce ? PropagateNull(sourceArgument, replacedExpression) : replacedExpression;
+        }
+
+        private static Expression PropagateNull(Expression nullableSource, Expression expression)
+        {
+            static Expression DefaultFor(Expression expression)
+            {
+                // Although we can just use default there, putting null is a better choice because it
+                // allows for a better readability, better testing (default -> null at compile time)
+                // and we can avoid some surprise bugs with EF providers that don't support default.
+                // (...If those even exist???)
+
+                if (expression.Type.IsValueType)
+                {
+                    return Expression.Default(expression.Type);
+                }
+
+                return Expression.Constant(null, expression.Type);
+            }
+
+            // source == default(<source type>) ?
+            //     default(<expression type>) : 
+            //     <expression>
+            return Expression.Condition(
+                Expression.Equal(nullableSource, DefaultFor(nullableSource)),
+                DefaultFor(expression),
+                expression);
         }
     }
 }

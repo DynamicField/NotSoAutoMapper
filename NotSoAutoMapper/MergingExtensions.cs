@@ -242,6 +242,8 @@ namespace NotSoAutoMapper
         public static IMapper<TInput, TResult> Merge<TBaseInput, TInput, TBaseResult, TResult>(
             this IMapper<TBaseInput, TBaseResult> mapper,
             Expression<Func<TInput, TResult>> mergeExtension)
+            where TBaseInput : notnull
+            where TBaseResult : notnull
             where TInput : TBaseInput
             where TResult : TBaseResult
         {
@@ -271,6 +273,8 @@ namespace NotSoAutoMapper
         public static IMapper<TInput, TResult> MergeOriginal<TBaseInput, TInput, TBaseResult, TResult>(
             this IMapper<TBaseInput, TBaseResult> mapper,
             Expression<Func<TInput, TResult>> mergeExtension)
+            where TBaseInput : notnull
+            where TBaseResult : notnull
             where TInput : TBaseInput
             where TResult : TBaseResult
         {

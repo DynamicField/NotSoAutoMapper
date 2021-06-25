@@ -19,7 +19,8 @@ namespace NotSoAutoMapper.Tests
         public string Name { get; set; } = null!;
         public string VerySecretString { get; set; } = null!;
 
-        public Cat FavoriteCat { get; set; } = null!;
+        public Cat? FavoriteCat { get; set; } = null;
+        public Cat FavoriteCatNotNull => FavoriteCat!;
 
         public Thing BestFriend { get; set; } = null!;
 
@@ -43,7 +44,7 @@ namespace NotSoAutoMapper.Tests
         public int Id { get; set; }
         public string Name { get; set; } = null!;
 
-        public CatDto FavoriteCat { get; set; } = null!;
+        public CatDto? FavoriteCat { get; set; } = null!;
 
         public ThingDto BestFriend { get; set; } = null!;
 

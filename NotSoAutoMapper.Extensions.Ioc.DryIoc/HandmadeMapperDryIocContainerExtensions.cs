@@ -15,7 +15,8 @@ namespace NotSoAutoMapper.Extensions.Ioc.DryIoc
         ///     Adds basic NotSoAutoMapper functionality.
         /// </summary>
         /// <param name="registrator">The registrator.</param>
-        public static void RegisterNotSoAutoMapper(this IRegistrator registrator) => NotSoAutoMapperIocContainerUtilities.AddNotSoAutoMapper(GetRegisterSingletonService(registrator));
+        public static void RegisterNotSoAutoMapper(this IRegistrator registrator) =>
+            NotSoAutoMapperIocContainerUtilities.AddNotSoAutoMapper(GetRegisterSingletonService(registrator));
 
         /// <summary>
         ///     Register the specified <paramref name="mapper" />.
@@ -29,7 +30,9 @@ namespace NotSoAutoMapper.Extensions.Ioc.DryIoc
         /// <param name="serviceKey"></param>
         public static void RegisterMapper<TSource, TTarget>(this IRegistrator registrator,
             IMapper<TSource, TTarget> mapper, IfAlreadyRegistered? ifAlreadyRegistered = null, Setup? setup = null,
-            object? serviceKey = null) => registrator.RegisterInstance(mapper, ifAlreadyRegistered, setup!, serviceKey);
+            object? serviceKey = null)
+            where TSource : notnull
+            where TTarget : notnull => registrator.RegisterInstance(mapper, ifAlreadyRegistered, setup!, serviceKey);
 
         /// <summary>
         ///     Registers a mapper of type <typeparamref name="T" />, with all <see cref="IMapper{TInput,TResult}" /> this class
@@ -90,7 +93,8 @@ namespace NotSoAutoMapper.Extensions.Ioc.DryIoc
         /// <inheritdoc cref="NotSoAutoMapperIocContainerUtilities.AddMappersFrom" />
         /// <typeparam name="T">The type containing the static methods.</typeparam>
         /// <param name="registrator">The registrator.</param>
-        public static void RegisterMappersFrom<T>(this IRegistrator registrator) => registrator.RegisterMappersFrom(typeof(T));
+        public static void RegisterMappersFrom<T>(this IRegistrator registrator) =>
+            registrator.RegisterMappersFrom(typeof(T));
 
         /// <inheritdoc cref="NotSoAutoMapperIocContainerUtilities.AddMappersFrom" />
         /// <param name="registrator">The registrator.</param>

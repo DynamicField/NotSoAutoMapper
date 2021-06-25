@@ -49,7 +49,9 @@ namespace NotSoAutoMapper.Extensions.Ioc.DependencyInjection
         /// <param name="mapper">The mapper.</param>
         /// <returns>The original <see cref="IServiceCollection" />.</returns>
         public static IServiceCollection AddMapper<TInput, TResult>(this IServiceCollection services,
-            IMapper<TInput, TResult> mapper) => services.AddSingleton(mapper);
+            IMapper<TInput, TResult> mapper) 
+            where TInput : notnull
+            where TResult : notnull => services.AddSingleton(mapper);
 
         /// <summary>
         ///     Registers the mapper of the specified type <typeparamref name="T" /> to the specified

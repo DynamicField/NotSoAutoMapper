@@ -1,6 +1,7 @@
 ﻿using NotSoAutoMapper.ExpressionProcessing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace NotSoAutoMapper
@@ -27,13 +28,15 @@ namespace NotSoAutoMapper
         [TransformedUsing(typeof(MapWithCollectionExpressionTransformer))]
         public static IQueryable<TResult> MapWith<TInput, TResult>(this IQueryable<TInput> source,
             IMapper<TInput, TResult> mapper)
+            where TInput : notnull 
+            where TResult : notnull
         {
-            if (mapper is null)
+            if (mapper == null)
             {
                 throw new ArgumentNullException(nameof(mapper));
             }
 
-            return source.Select(mapper.Expression);
+            return source.Select(x => mapper.Map(x));
         }
 
         /// <summary>
@@ -52,28 +55,32 @@ namespace NotSoAutoMapper
         /// </returns>
         [TransformedUsing(typeof(MapWithCollectionExpressionTransformer))]
         public static IEnumerable<TResult> MapWith<TInput, TResult>(this IEnumerable<TInput> source,
-            IMapper<TInput, TResult> mapper)
+            IMapper<TInput, TResult> mapper)             
+            where TInput : notnull 
+            where TResult : notnull
         {
             if (mapper is null)
             {
                 throw new ArgumentNullException(nameof(mapper));
             }
 
-            return source.Select(mapper.Map);
+            return source.Select(x => mapper.Map(x));
         }
-
+#nullable enable
         /// <summary>
-        /// 
+        /// Maps an object using the given mapper.
+        /// If the source is null, the projected element is null as well.
         /// </summary>
-        /// <typeparam name="TInput"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="mapper"></param>
-        /// <returns></returns>
+        /// <typeparam name="TInput">The input type.</typeparam>
+        /// <typeparam name="TResult">The result type.</typeparam>
+        /// <param name="source">The source object.</param>
+        /// <param name="mapper">The mapper to use.</param>
+        /// <returns>The mapped object, or the default value if <paramref name="source"/> is null.</returns>
         [TransformedUsing(typeof(MapWithObjectExpressionTransformer))]
-        public static TResult MapWith<TInput, TResult>(this TInput source, IMapper<TInput, TResult> mapper)
-        {
-            return mapper.Map(source);
-        }
+        [return: NotNullIfNotNull("source")]
+        public static TResult? MapWith<TInput, TResult>(this TInput? source, IMapper<TInput, TResult> mapper)
+            where TInput : notnull
+            where TResult : notnull
+            => mapper.Map(source);
     }
 }
