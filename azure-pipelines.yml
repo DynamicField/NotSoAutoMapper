@@ -6,32 +6,47 @@
 trigger:
 - master
 
+pr:
+  branches:
+    include:
+    - "*"
+  paths:
+    exclude:
+    - README.md
+
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-    arguments: '-c Release'
-    
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
-    projects: '**/*.Tests.csproj'
-    testRunTitle: 'Run tests'
-
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(agent.builddirectory)'
-    Contents: |
-      **/*.nupkg
-      **/*.snupkg
-    TargetFolder: '$(build.artifactstagingdirectory)'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'nuget'
-    publishLocation: 'Container'
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        projects: '**/*.csproj'
+        arguments: '-c Release'
+  - job: CopyBuildArtifacts
+    steps:
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(agent.builddirectory)'
+        Contents: |
+          **/*.nupkg
+          **/*.snupkg
+        TargetFolder: '$(build.artifactstagingdirectory)'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'nuget'
+        publishLocation: 'Container'
+- stage: Test
+  jobs:
+  - job: Test
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'test'
+        projects: '**/*.Tests.csproj'
+        testRunTitle: 'Run tests'
