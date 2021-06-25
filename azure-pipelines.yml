@@ -27,8 +27,6 @@ stages:
         command: 'build'
         projects: '**/*.csproj'
         arguments: '-c Release'
-  - job: CopyBuildArtifacts
-    steps:
     - task: CopyFiles@2
       inputs:
         SourceFolder: '$(agent.builddirectory)'
@@ -41,6 +39,7 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'nuget'
         publishLocation: 'Container'
+
 - stage: Test
   jobs:
   - job: Test
