@@ -23,9 +23,9 @@ namespace NotSoAutoMapper.ExpressionProcessing
                 switch (member)
                 {
                     case PropertyInfo propertyInfo:
-                        return (T?) propertyInfo.GetValue(memberExpression.Expression.GetValue<object>());
+                        return (T?) propertyInfo.GetValue(memberExpression.Expression?.GetValue<object>());
                     case FieldInfo fieldInfo:
-                        return (T?) fieldInfo.GetValue(memberExpression.Expression.GetValue<object>());
+                        return (T?) fieldInfo.GetValue(memberExpression.Expression?.GetValue<object>());
                 }
             }
             
