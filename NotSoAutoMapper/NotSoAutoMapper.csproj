@@ -7,7 +7,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Authors>jeuxjeux20</Authors>
     <Product />
-    <Description>A simple and extensible library to map DTOs (or anything!) using powerful expressions.</Description>
+    <Description>A library to map your DTOs with reusable expressions.</Description>
     <PackageProjectUrl>https://github.com/jeuxjeux20/NotSoAutoMapper</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>logo_512x512.png</PackageIcon>
@@ -16,6 +16,12 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>handmademapper mapper dto expression entityframework ef efcore entityframeworkcore map</PackageTags>
     <PackageReleaseNotes>
+      3.0.0-preview4:
+      * Creating a mapper is now much faster.
+      
+      3.0.0-preview3:
+      * Null bug fixes
+      
       3.0.0-preview2:
       * Added custom TransformedUsing attributes
       * Added inheritance for Merge
@@ -27,7 +33,7 @@
       * Removed recursion prevention as it is not longer possible to have recursion with eager-loading mappers
       * Removed MapperOptions
     </PackageReleaseNotes>
-    <Version>3.0.0-preview3</Version>
+    <Version>3.0.0-preview4</Version>
     <AssemblyVersion>3.0.0</AssemblyVersion>
     <FileVersion>3.0.0</FileVersion>
   </PropertyGroup>

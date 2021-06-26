@@ -29,7 +29,7 @@ namespace NotSoAutoMapper.ExpressionProcessing
             // -----
             //  collection.Select(y => new Thing { Name = y.Name })
 
-            var mapper = mapperExpression.CompileAndGet<IMapper>() ?? throw TransformerExceptions.NullMapperException;
+            var mapper = mapperExpression.GetValue<IMapper>() ?? throw TransformerExceptions.NullMapperException;
 
             // The item type of the source : IEnumerable<int> -> int
             var sourceItemType = FindEnumerableType(sourceExpression.Type).GenericTypeArguments[0];
@@ -66,7 +66,7 @@ namespace NotSoAutoMapper.ExpressionProcessing
 
         public static Expression InlineObject(Expression sourceExpression, Expression mapperExpression)
         {
-            var mapper = mapperExpression.CompileAndGet<IMapper>();
+            var mapper = mapperExpression.GetValue<IMapper>();
             if (mapper is null)
             {
                 throw TransformerExceptions.NullMapperException;
