@@ -105,7 +105,7 @@ namespace NotSoAutoMapper.Extensions.Ioc.DryIoc
 
             NotSoAutoMapperIocContainerUtilities.AddMappersFrom(type, (method, descriptor, getter) => {
                 registrator.RegisterDelegate(descriptor.ServiceType, resolver => {
-                    var expression = getter(resolver.Resolve!);
+                    var expression = getter(resolver.Resolve);
                     try
                     {
                         return resolver.Resolve(descriptor.ImplementationType, new object[] { expression },

@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using NotSoAutoMapper.ExpressionProcessing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace NotSoAutoMapper.Tests
@@ -9,21 +7,6 @@ namespace NotSoAutoMapper.Tests
     [TestClass]
     public class MapperTests
     {
-        [TestMethod]
-        public void UseExpression_AlreadyHavingAnException_Throws() => Assert.ThrowsException<InvalidOperationException>(() => new ShouldThrowExceptionTestMapper());
-
-        [TestMethod]
-        public void ExpressionTransformers_AreUsed_Eager()
-        {
-            var success = false;
-            var processor = new TestExpressionTransformer(() => success = true);
-            _ = new Mapper<object, object>(x => x, new[] {processor});
-
-            // Normally, the expression should already have been processed.
-
-            Assert.IsTrue(success, "success is false.");
-        }
-
         [TestMethod]
         public void Map_MapsObjectFromExpression()
         {
@@ -54,33 +37,6 @@ namespace NotSoAutoMapper.Tests
             var result = mapper.Map(null);
             
             Assert.IsNull(result);
-        }
-
-        private class ShouldThrowExceptionTestMapper : Mapper<object, object>
-        {
-            public ShouldThrowExceptionTestMapper(IEnumerable<IMapperExpressionTransformer>? expressionTransformers = null) :
-                base(x => new object(), expressionTransformers)
-            {
-                UseExpression(x => new object());
-            }
-        }
-
-        private class TestExpressionTransformer : IMapperExpressionTransformer
-        {
-            private readonly Action _onSuccess;
-
-            public TestExpressionTransformer(Action onSuccess)
-            {
-                _onSuccess = onSuccess;
-            }
-
-            public IMapperExpressionTransformer.RunPosition Position => IMapperExpressionTransformer.RunPosition.Beginning;
-
-            public Expression<T> Transform<T>(Expression<T> source)
-            {
-                _onSuccess();
-                return source;
-            }
         }
     }
 }

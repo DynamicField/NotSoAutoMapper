@@ -16,6 +16,12 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>handmademapper mapper dto expression entityframework ef efcore entityframeworkcore map</PackageTags>
     <PackageReleaseNotes>
+      3.0.0-preview5:
+      * Added preview support for polymorphism
+      * MapWith now works correctly
+      * Tweaked error handling to actually show the problematic expression
+      * Added AbstractMapper as a base for mapper implementations
+      
       3.0.0-preview4:
       * Creating a mapper is now much faster.
       
@@ -33,7 +39,7 @@
       * Removed recursion prevention as it is not longer possible to have recursion with eager-loading mappers
       * Removed MapperOptions
     </PackageReleaseNotes>
-    <Version>3.0.0-preview4</Version>
+    <Version>3.0.0-preview5</Version>
     <AssemblyVersion>3.0.0</AssemblyVersion>
     <FileVersion>3.0.0</FileVersion>
   </PropertyGroup>

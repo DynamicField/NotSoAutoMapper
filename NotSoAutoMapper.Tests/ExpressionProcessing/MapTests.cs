@@ -50,7 +50,7 @@ namespace NotSoAutoMapper.Tests.ExpressionProcessing
         {
             Expression<Func<object, int>> expression = x => ((IMapper<object, int>) null!).Map(x);
 
-            Assert.ThrowsException<InvalidOperationException>(() => expression.ApplyTransformations());
+            Assert.ThrowsException<ExpressionTransformationException>(() => expression.ApplyTransformations());
         }
     }
 }

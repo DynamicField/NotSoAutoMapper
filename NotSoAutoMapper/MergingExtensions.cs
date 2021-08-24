@@ -237,10 +237,10 @@ namespace NotSoAutoMapper
         /// <typeparam name="TBaseResult">The base result type of the source mapper.</typeparam>
         /// <param name="mapper">The mapper containing the expression to merge.</param>
         /// <param name="mergeExtension">The expression that will be merged with the <paramref name="mapper" />'s expression.</param>
-        /// <returns>A mapper with the merged expression, created using <see cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />.</returns>
-        /// <seealso cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />
-        public static IMapper<TInput, TResult> Merge<TBaseInput, TInput, TBaseResult, TResult>(
-            this IMapper<TBaseInput, TBaseResult> mapper,
+        /// <returns>A mapper with the merged expression, created using <see cref="Mapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />.</returns>
+        /// <seealso cref="Mapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />
+        public static Mapper<TInput, TResult> Merge<TBaseInput, TInput, TBaseResult, TResult>(
+            this Mapper<TBaseInput, TBaseResult> mapper,
             Expression<Func<TInput, TResult>> mergeExtension)
             where TBaseInput : notnull
             where TBaseResult : notnull
@@ -253,37 +253,6 @@ namespace NotSoAutoMapper
             }
 
             var originalExpression = mapper.Expression;
-            var mergedExpression = originalExpression.Merge(mergeExtension);
-            return mapper.WithExpression(mergedExpression);
-        }
-
-        /// <summary>
-        ///     Creates a new mapper with the original expression of the specified <paramref name="mapper" /> with the specified
-        ///     <paramref name="mergeExtension" />,
-        ///     using <see cref="Merge{TBaseInput,TInput,TBaseResult,TResult}(System.Linq.Expressions.Expression{System.Func{TBaseInput,TBaseResult}},System.Linq.Expressions.Expression{System.Func{TInput,TResult}})" />.
-        /// </summary>
-        /// <typeparam name="TInput">The input type of the mapper.</typeparam>
-        /// <typeparam name="TResult">The result type of the mapper.</typeparam>
-        /// <typeparam name="TBaseInput">The base input type of the source mapper.</typeparam>
-        /// <typeparam name="TBaseResult">The base result type of the source mapper.</typeparam>
-        /// <param name="mapper">The mapper containing the expression to merge.</param>
-        /// <param name="mergeExtension">The expression that will be merged with the <paramref name="mapper" />'s expression.</param>
-        /// <returns>A mapper with the merged expression, created using <see cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />.</returns>
-        /// <seealso cref="IMapper{TInput,TResult}.WithExpression{TNewInput,TNewResult}" />
-        public static IMapper<TInput, TResult> MergeOriginal<TBaseInput, TInput, TBaseResult, TResult>(
-            this IMapper<TBaseInput, TBaseResult> mapper,
-            Expression<Func<TInput, TResult>> mergeExtension)
-            where TBaseInput : notnull
-            where TBaseResult : notnull
-            where TInput : TBaseInput
-            where TResult : TBaseResult
-        {
-            if (mapper is null)
-            {
-                throw new ArgumentNullException(nameof(mapper));
-            }
-
-            var originalExpression = mapper.OriginalExpression;
             var mergedExpression = originalExpression.Merge(mergeExtension);
             return mapper.WithExpression(mergedExpression);
         }

@@ -119,5 +119,19 @@ namespace NotSoAutoMapper.Tests.ExpressionProcessing
 
             Assert.That.ExpressionsAreEqual(expectedExpression, expression);
         }
+
+        [TestMethod]
+        public void RootQueryable_HasExpression()
+        {
+            var mapperExpression = s_catDtoMapper.Expression;
+            var baseQueryable = Enumerable.Empty<Cat>().AsQueryable();
+            
+            var mappedQueryable = baseQueryable.MapWith(s_catDtoMapper);
+
+            // EnumerableQuery<Cat>.Select([expression])
+            var selectQueryableExpression = 
+                ((UnaryExpression) ((MethodCallExpression) mappedQueryable.Expression).Arguments[1]).Operand;
+            Assert.That.ExpressionsAreEqual(mapperExpression, selectQueryableExpression);
+        }
     }
 }

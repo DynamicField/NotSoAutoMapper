@@ -16,7 +16,6 @@ namespace NotSoAutoMapper.ExpressionProcessing
             _replacements.Add((old, @new));
         }
 
-
         public ReplacerVisitor(IEnumerable<(Expression old, Expression @new)> replacements)
         {
             _replacements.AddRange(replacements);

@@ -106,10 +106,10 @@ namespace NotSoAutoMapper.ExpressionProcessing
             throw new NotSupportedException($"Cannot find method for collection type {collectionType}.");
         }
 
-        private static Expression InlineMapper(IMapper mapper, Expression sourceArgument, bool coalesce)
-            => InlineMapper(mapper.Expression, sourceArgument, coalesce);
+        public static Expression InlineMapper(IMapper mapper, Expression sourceArgument, bool coalesce)
+            => InlineMapperExpression(mapper.Expression, sourceArgument, coalesce);
 
-        private static Expression InlineMapper(LambdaExpression mapperExpression,
+        public static Expression InlineMapperExpression(LambdaExpression mapperExpression,
             Expression sourceArgument, bool coalesce)
         {
             // We get a lambda expression from the mapper:
@@ -125,30 +125,13 @@ namespace NotSoAutoMapper.ExpressionProcessing
             return coalesce ? PropagateNull(sourceArgument, replacedExpression) : replacedExpression;
         }
 
-        private static Expression PropagateNull(Expression nullableSource, Expression expression)
-        {
-            static Expression DefaultFor(Expression expression)
-            {
-                // Although we can just use default there, putting null is a better choice because it
-                // allows for a better readability, better testing (default -> null at compile time)
-                // and we can avoid some surprise bugs with EF providers that don't support default.
-                // (...If those even exist???)
-
-                if (expression.Type.IsValueType)
-                {
-                    return Expression.Default(expression.Type);
-                }
-
-                return Expression.Constant(null, expression.Type);
-            }
-
-            // source == default(<source type>) ?
-            //     default(<expression type>) : 
-            //     <expression>
-            return Expression.Condition(
-                Expression.Equal(nullableSource, DefaultFor(nullableSource)),
-                DefaultFor(expression),
+        // source == default(<source type>) ?
+        //     default(<expression type>) : 
+        //     <expression>
+        private static Expression PropagateNull(Expression nullableSource, Expression expression) =>
+            Expression.Condition(
+                Expression.Equal(nullableSource, MakeDefaultExpression.For(nullableSource)),
+                MakeDefaultExpression.For(expression),
                 expression);
-        }
     }
 }

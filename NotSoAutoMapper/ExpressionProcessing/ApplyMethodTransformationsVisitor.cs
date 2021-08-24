@@ -13,8 +13,17 @@ namespace NotSoAutoMapper.ExpressionProcessing
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            var transformer = s_methodTransformersCache.GetOrAdd(node.Method, ProvideExpressionTransformer);
-            return transformer is null ? base.VisitMethodCall(node) : transformer.Transform(node);
+            try
+            {
+                var transformer = s_methodTransformersCache.GetOrAdd(node.Method, ProvideExpressionTransformer);
+                return transformer is null ? base.VisitMethodCall(node) : transformer.Transform(node);
+            }
+            catch (Exception e) when (e is not ExpressionTransformationException)
+            {
+                var innerMessageEndSentence = string.IsNullOrEmpty(e.Message) ? "." : ". " + e.Message;
+                throw new ExpressionTransformationException(
+                    $"Failed to transform expression `{node}`{innerMessageEndSentence}", e);
+            }
         }
 
         private static IMethodExpressionTransformer? ProvideExpressionTransformer(MethodInfo method)

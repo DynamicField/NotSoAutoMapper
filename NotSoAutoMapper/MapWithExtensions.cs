@@ -36,7 +36,7 @@ namespace NotSoAutoMapper
                 throw new ArgumentNullException(nameof(mapper));
             }
 
-            return source.Select(x => mapper.Map(x));
+            return source.Select(mapper.Expression);
         }
 
         /// <summary>

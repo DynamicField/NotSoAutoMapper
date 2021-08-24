@@ -34,7 +34,7 @@ namespace NotSoAutoMapper.Extensions.Ioc.DependencyInjection
             {
                 services.AddSingleton(types.ServiceType, provider =>
                 {
-                    var expression = methodGetter(provider.GetRequiredService!);
+                    var expression = methodGetter(provider.GetRequiredService);
                     return ActivatorUtilities.CreateInstance(provider, types.ImplementationType, expression);
                 });
             });
